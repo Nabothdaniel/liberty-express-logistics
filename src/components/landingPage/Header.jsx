@@ -66,8 +66,8 @@ export default function Header() {
                     </ul>
                 </div>
 
-                <div className="hidden md:block">
-                    <button  onClick={routeToLogin} className="border-gray-500 border-2 text-gray-500 hover:text-blue-600 rounded-lg px-3 py-2 cursor-pointer font-bold">
+                <div>
+                    <button  onClick={routeToLogin} className="border-gray-500 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold">
                         Get Started
                     </button>
                 </div>

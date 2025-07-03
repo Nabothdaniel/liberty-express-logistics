@@ -2,6 +2,7 @@ import  { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiTruck } from 'react-icons/fi';
 import FormImg from '../assets/images/forms/form.jpg'
+import { Link } from 'react-router-dom';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -118,9 +119,9 @@ const Login = () => {
 
             <p className="text-sm text-center text-gray-600 mt-4">
               Don't have an account?{' '}
-              <a href="#" className="text-blue-600 font-medium hover:underline">
+              <Link to="/signup" className="text-blue-600 font-medium hover:underline">
                 Sign up
-              </a>
+              </Link>
             </p>
           </div>
         </motion.div>
