@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
-    let navigate = useNavigate()
-
-    const routeToLogin = ()=> navigate('/login')
+    const routeToLogin = () => navigate("/signup");
 
     return (
-        <header className="bg-white text-black border-b md:border-0 md:rounded-md border-gray-200 fixed top-0 md:top-3   left-0 md:left-10 right-0 md:right-10  z-[999]">
-            <div className=" md:max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center justify-between">
-                <div className="flex flex-row items-center justify-between">
+        <header className="bg-white text-black border-b md:border-0 md:rounded-md border-gray-200 fixed top-0 md:top-3 left-0 md:left-10 right-0 md:right-10 z-[999]">
+            <div className="md:max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center justify-between">
+                <div className="flex flex-row items-center justify-between w-full md:w-auto">
                     {/* Logo */}
                     <a href="/" className="text-xl font-semibold text-gray-800">
                         Liberty Express
@@ -34,45 +33,57 @@ export default function Header() {
 
                 {/* Nav Menu */}
                 <div
-                    className={`transition-all duration-500 ease-in-out overflow-hidden md:flex md:items-center ${menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    className={`transition-all duration-500 ease-in-out overflow-hidden md:flex md:items-center w-full md:w-auto ${menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
                         } md:max-h-full md:opacity-100`}
                     style={{ transitionProperty: "max-height, opacity" }}
                 >
-                    <ul className="flex flex-col md:flex-row md:space-x-6 py-4 md:py-0 text-left">
+                    <ul className="flex flex-col md:flex-row md:space-x-6 py-4 md:py-0 text-left w-full md:w-auto">
                         <li>
-                            <a
-                                href="#"
-                                className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded-md hover:text-blue-600"
-                            >
+                            <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded-md hover:text-blue-600">
                                 Home
                             </a>
                         </li>
                         <li>
-                            <a
-                                href="#"
-                                className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded-md hover:text-blue-600"
-                            >
+                            <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded-md hover:text-blue-600">
                                 About Us
                             </a>
                         </li>
                         <li>
-                            <a
-                                href="#"
-                                className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded-md hover:text-blue-600"
-                            >
+                            <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded-md hover:text-blue-600">
                                 Product & Solutions
                             </a>
+                        </li>
+                        {/* Mobile Buttons */}
+                        <li className="block md:hidden px-4 mt-4">
+                            <Link
+                                to="/login"
+                                className=" text-white mb-3 text-center bg-gray-900 px-4 py-3 rounded-md text-sm font-semibold shadow-sm active:bg-gray-700 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 block lg:inline lg:bg-transparent lg:shadow-none lg:px-0 lg:py-0 lg:rounded-none lg:text-gray-900 lg:hover:text-gray-700 lg:active:text-gray-700 lg:font-medium lg:hover:underline
+  "
+                            >
+                                Login
+                            </Link>
+
+                            <button
+                                onClick={routeToLogin}
+                                className="w-full border-gray-500 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold"
+                            >
+                                Get Started
+                            </button>
                         </li>
                     </ul>
                 </div>
 
-                <div>
-                    <button  onClick={routeToLogin} className="border-gray-500 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold">
+                {/* Desktop Buttons */}
+                <div className="hidden md:flex items-center gap-4">
+                    <Link to="/login" className="text-gray-900 hover:text-gray-700 active:text-gray-700 font-medium hover:underline">
+                        Login
+                    </Link>
+                    <button
+                        onClick={routeToLogin}
+                        className="border-gray-500 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold"
+                    >
                         Get Started
                     </button>
-                    <Link to="/dashboard" className="text-blue-600 font-medium hover:underline">
-                        Go to Dashboard
-                    </Link>
                 </div>
             </div>
         </header>

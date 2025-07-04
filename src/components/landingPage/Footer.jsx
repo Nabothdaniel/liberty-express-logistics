@@ -1,26 +1,45 @@
-import React from 'react'
-
 const Footer = () => {
-  return (
-    <div className='flex  rounded-tl-[3rem] shadow-sm md:rounded-lg flex-col md:flex-row md:items-center px-4 md:px-20 text-left md:text-center justify-between py-10 bg-gray-900 text-white gap-5 md:gap-0'>
-        <div>
-            <h1 className=' font-bold text-2xl md:mb-3'>Liberty Express</h1>
-            <ul className='my-5 md:my-0'>
-                <li className='mb-2 hover:text-blue-500'><a href="#" >Home</a></li>
-                <li className='mb-2 hover:text-blue-500'><a href="#">About</a></li>
-                <li className='mb-2 hover:text-blue-500'><a href="#">Products & solutions</a></li>
-            </ul>
-        </div>
-       
-        <ul>
-            <li className='mb-2 hover:text-blue-500'><a href="#">Privacy Policy</a></li>
-            <li className='hover:text-blue-500'><a href="#">User Data Policy</a></li>
-        </ul>
-        <div>
-            <p className='cursor-pointer hover:text-blue-500'> &copy; {new Date().getFullYear()}  Liberty Express </p>
-        </div>
-    </div>
-  )
-}
+    return (
+        <footer className="bg-gray-900 text-white px-6 md:px-20 py-12">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-20">
+                {/* Brand and Navigation */}
+                <div>
+                    <h1 className="text-2xl font-bold mb-4">Liberty Express</h1>
+                    <ul className="space-y-2">
+                        <li>
+                            <a href="#" className="hover:text-blue-400 transition-colors">Home</a>
+                        </li>
+                        <li>
+                            <a href="#" className="hover:text-blue-400 transition-colors">About</a>
+                        </li>
+                        <li>
+                            <a href="#" className="hover:text-blue-400 transition-colors">Products & Solutions</a>
+                        </li>
+                    </ul>
+                </div>
 
-export default Footer
+                {/* Policies */}
+                <div>
+                    <h2 className="text-xl font-semibold mb-4">Legal</h2>
+                    <ul className="space-y-2">
+                        <li>
+                            <a href="#" className="hover:text-blue-400 transition-colors">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a href="#" className="hover:text-blue-400 transition-colors">User Data Policy</a>
+                        </li>
+                    </ul>
+                </div>
+
+                {/* Footer bottom section */}
+                <div className="flex flex-col justify-between">
+                    <p className="text-sm md:text-base text-gray-400 mt-6 md:mt-0">
+                        &copy; {new Date().getFullYear()} Liberty Express. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    );
+};
+
+export default Footer;

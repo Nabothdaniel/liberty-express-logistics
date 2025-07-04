@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowLeft, FiEye, FiEyeOff, FiUser, FiMail, FiPhone, FiLock, FiCheck, FiTruck, FiPackage, FiMapPin } from 'react-icons/fi';
 import { BsBuilding } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
+import FormImg from '../assets/images/forms/form.jpg'
 
 
 
@@ -55,12 +56,12 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Left Hero Section */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20" />
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{
-            backgroundImage: `url('/lovable-uploads/45c4a90c-72e9-4b32-a9d4-2978ba1e6085.png')`
+     backgroundImage: `url(${FormImg})`
           }}
         />
         
@@ -77,7 +78,7 @@ const Signup = () => {
             className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20"
           >
             <h2 className="text-3xl font-bold mb-4">Streamline Your Logistics Today!</h2>
-            <p className="text-lg leading-relaxed text-blue-100">
+            <p className="text-lg leading-relaxed text-gray-100">
               Join thousands of businesses that trust LogiFlow for their shipping 
               and logistics needs. Our platform makes it easy to manage your 
               supply chain from start to finish.
@@ -110,15 +111,15 @@ const Signup = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 onClick={prevStep}
-                className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+                className="flex items-center gap-2 text-gray-600 cursor-pointer active:text-gray-600 hover:text-gray-600 transition-colors"
               >
                 <FiArrowLeft className="w-4 h-4" />
                 Back
               </motion.button>
             )}
             <div className="lg:hidden flex items-center gap-2">
-              <FiTruck className="w-6 h-6 text-blue-600" />
-              <h1 className="text-2xl font-bold text-blue-600">Liberty Express</h1>
+              <FiTruck className="w-6 h-6 text-gray-600" />
+              <h1 className="text-2xl font-bold text-gray-600">Liberty Express</h1>
             </div>
           </div>
 
@@ -184,7 +185,7 @@ const Signup = () => {
                         placeholder="e.g. ABC Logistics Inc."
                         value={formData.companyName}
                         onChange={(e) => handleInputChange('companyName', e.target.value)}
-                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -201,7 +202,7 @@ const Signup = () => {
                         placeholder="e.g. John Smith"
                         value={formData.contactPerson}
                         onChange={(e) => handleInputChange('contactPerson', e.target.value)}
-                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -218,7 +219,7 @@ const Signup = () => {
                         placeholder="e.g. john@abclogistics.com"
                         value={formData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -235,7 +236,7 @@ const Signup = () => {
                         placeholder="+1 (555) 123-4567"
                         value={formData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -252,7 +253,7 @@ const Signup = () => {
                         placeholder="Create a secure password"
                         value={formData.password}
                         onChange={(e) => handleInputChange('password', e.target.value)}
-                        className="w-full h-12 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-12 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       />
                       <button
                         type="button"
@@ -281,7 +282,7 @@ const Signup = () => {
                         placeholder="Confirm your password"
                         value={formData.confirmPassword}
                         onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                        className="w-full h-12 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-12 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       />
                       <button
                         type="button"
@@ -305,7 +306,7 @@ const Signup = () => {
                         placeholder="Enter your complete business address"
                         value={formData.address}
                         onChange={(e) => handleInputChange('address', e.target.value)}
-                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -318,7 +319,7 @@ const Signup = () => {
                       id="businessType"
                       value={formData.businessType}
                       onChange={(e) => handleInputChange('businessType', e.target.value)}
-                      className="w-full h-12 px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="w-full h-12 px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
                     >
                       <option value="">Select your business type</option>
                       <option value="manufacturer">Manufacturer</option>
@@ -337,7 +338,7 @@ const Signup = () => {
                       id="shipmentVolume"
                       value={formData.shipmentVolume}
                       onChange={(e) => handleInputChange('shipmentVolume', e.target.value)}
-                      className="w-full h-12 px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="w-full h-12 px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
                     >
                       <option value="">Select shipment volume</option>
                       <option value="1-50">1-50 packages</option>
@@ -362,7 +363,7 @@ const Signup = () => {
                         id="serviceType"
                         value={formData.serviceType}
                         onChange={(e) => handleInputChange('serviceType', e.target.value)}
-                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                        className="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
                       >
                         <option value="">Select service type</option>
                         <option value="domestic">Domestic Shipping</option>
@@ -384,16 +385,16 @@ const Signup = () => {
                       value={formData.specialRequirements}
                       onChange={(e) => handleInputChange('specialRequirements', e.target.value)}
                       rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent resize-none"
                     />
                   </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 text-blue-800">
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-gray-800">
                       <FiCheck className="w-4 h-4" />
                       <span className="text-sm font-medium">Ready to get started!</span>
                     </div>
-                    <p className="text-xs text-blue-600 mt-1">
+                    <p className="text-xs text-gray-600 mt-1">
                       Your logistics partner account will be created and you'll receive a welcome email with next steps.
                     </p>
                   </div>
@@ -406,7 +407,7 @@ const Signup = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={currentStep === 3 ? handleSubmit : nextStep}
-                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors flex items-center justify-center gap-2"
+                  className="w-full h-12 bg-gray-900 hover:bg-gray-700 cursor-pointer text-white font-medium rounded-md transition-colors flex items-center justify-center gap-2"
                 >
                   {currentStep === 3 ? (
                     <>
@@ -421,7 +422,7 @@ const Signup = () => {
                 {currentStep === 1 && (
                   <p className="text-center text-sm text-gray-600 mt-4">
                     Already have an account?{' '}
-                    <Link to="/login" className="text-blue-600 font-medium hover:underline">
+                    <Link to="/login" className="text-gray-600 font-medium hover:underline">
                       Sign In
                     </Link>
                   </p>

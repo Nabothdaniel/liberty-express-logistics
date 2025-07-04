@@ -28,20 +28,25 @@ export default function About() {
   };
 
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-start">
+    <section className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-20 items-center">
         {/* Left: Accordion */}
-        <div>
-            <h1 className='text-4xl md:text-6xl text-center font-bold mb-5'>About Us</h1>
-          <p className="text-gray-500 mb-6 max-w-7xl">
-            With advanced logistics planning and real-time tracking, we ensure your cargo reach their destination on schedule—every time.
+        <div className="max-w-2xl">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            About <span className="text-blue-600">Liberty Express</span>
+          </h2>
+          <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+            We specialize in seamless logistics solutions that ensure your shipments reach their destination safely, efficiently, and on time—every time.
           </p>
-          <div className="space-y-4">
+          <div className="space-y-5">
             {features.map((feature, index) => (
-              <div key={index} className="border rounded-lg ">
+              <div
+                key={index}
+                className="border border-gray-200 rounded-xl shadow-sm transition-all duration-300"
+              >
                 <button
                   onClick={() => toggle(index)}
-                  className="w-full flex cursor-pointer justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+                  className="w-full flex justify-between items-center px-5 py-4 text-left text-gray-800 font-semibold text-base focus:outline-none"
                 >
                   <span>{feature.title}</span>
                   {openIndex === index ? (
@@ -51,7 +56,7 @@ export default function About() {
                   )}
                 </button>
                 {openIndex === index && (
-                  <div className="px-4 pb-4 text-sm text-gray-600 cursor-pointer">
+                  <div className="px-5 pb-5 text-gray-600 text-sm leading-relaxed">
                     {feature.content}
                   </div>
                 )}
@@ -61,11 +66,11 @@ export default function About() {
         </div>
 
         {/* Right: Image */}
-        <div className="w-full rounded-lg overflow-hidden">
+        <div className="w-full h-[28rem] rounded-2xl overflow-hidden shadow-xl">
           <img
             src={Img}
-            alt="liberty express logo"
-            className="w-full h-auto object-cover rounded-lg shadow"
+            alt="Liberty Express operations"
+            className="w-full h-full object-cover"
           />
         </div>
       </div>
