@@ -70,6 +70,9 @@ export default function Header() {
                     <button  onClick={routeToLogin} className="border-gray-500 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold">
                         Get Started
                     </button>
+                    <Link to="/dashboard" className="text-blue-600 font-medium hover:underline">
+                        Go to Dashboard
+                    </Link>
                 </div>
             </div>
         </header>
