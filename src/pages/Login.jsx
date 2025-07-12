@@ -1,20 +1,49 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiTruck } from 'react-icons/fi';
 import FormImg from '../assets/images/forms/form.jpg'
 import { Link } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/firebase'; 
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleLogin = () => {
-    console.log('Logging in with:', formData);
-    alert('Login submitted!');
+  const handleLogin = async () => {
+    const { email, password } = formData;
+
+    if (!email || !password) {
+      toast.error("Please enter both email and password.");
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Optional: check if email is verified
+      if (!user.emailVerified) {
+        toast.warning("Please verify your email before logging in.");
+        return;
+      }
+
+      toast.success("Login successful! Redirecting...");
+      navigate('/dashboard'); // Update this to your actual dashboard route
+
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error(error.message || "Login failed. Please try again.");
+    }
   };
 
   return (
