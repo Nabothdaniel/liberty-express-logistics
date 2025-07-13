@@ -14,6 +14,7 @@ import Login from './pages/Login.jsx'
 import Landing from './pages/Landing.jsx'
 import Dashboard from './pages/Dashboard.jsx';
 import Signup from './pages/Signup.jsx';
+import ProtectedRoute from './components/protectedRoute.jsx';
 
 
 const router = createBrowserRouter([
@@ -23,7 +24,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <Dashboard />,
+    element: (
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/login',
@@ -38,8 +43,8 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-    <RouterProvider router={router} />
-    <ToastContainer />
+      <RouterProvider router={router} />
+      <ToastContainer />
     </AuthProvider>
   </StrictMode>,
 )
