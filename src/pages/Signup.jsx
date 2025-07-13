@@ -218,7 +218,8 @@ const Signup = () => {
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
         email,
-        contactPerson,
+        balance: 0,
+        username: contactPerson,
         createdAt: new Date().toISOString()
       });
 

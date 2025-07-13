@@ -4,7 +4,7 @@ import { FiMail, FiLock, FiEye, FiEyeOff, FiTruck } from 'react-icons/fi';
 import FormImg from '../assets/images/forms/form.jpg'
 import { Link } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/firebase'; 
+import { auth } from '../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
 
@@ -26,6 +27,8 @@ const Login = () => {
       toast.error("Please enter both email and password.");
       return;
     }
+
+    setLoading(true);
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -43,6 +46,8 @@ const Login = () => {
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error.message || "Login failed. Please try again.");
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -143,7 +148,7 @@ const Login = () => {
               onClick={handleLogin}
               className="w-full h-12 bg-gray-900 active:bg-gray-700 hover:bg-gray-700 text-white font-medium rounded-md transition-colors flex items-center justify-center gap-2"
             >
-              Login
+              {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Login'}
             </motion.button>
 
             <p className="text-sm text-center text-gray-600 mt-4">
