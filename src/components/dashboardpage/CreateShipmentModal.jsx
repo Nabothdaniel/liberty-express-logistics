@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import { useAtomValue } from 'jotai';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { userAtom } from '../../atoms/authAtom';
 import { db } from '../../firebase/firebase';
 import { toast } from 'react-toastify';
@@ -11,6 +11,7 @@ export default function CreateShipmentModal({ onClose }) {
   const overlayRef = useRef();
   const [price, setPrice] = useState(null);
   const [showAddFunds, setShowAddFunds] = useState(false);
+    const [loading, setLoading] = useState(false);
   const user = useAtomValue(userAtom);
 
   const [formData, setFormData] = useState({
@@ -66,27 +67,51 @@ export default function CreateShipmentModal({ onClose }) {
     e.preventDefault();
     if (!price || !user?.uid) return;
 
+      setLoading(true);
+
     try {
       const userRef = doc(db, 'users', user.uid);
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
 
       if (userData.balance >= parseFloat(price)) {
+        // Deduct user balance
         await updateDoc(userRef, {
           balance: userData.balance - parseFloat(price),
         });
 
-        console.log('Shipment submitted:', formData);
-        toast.success('shipment made succesfully')
+        // S Create the shipment
+        const shipmentRef = await addDoc(collection(db, 'shipments'), {
+          ...formData,
+          userId: user.uid,
+          createdAt: serverTimestamp(),
+          price: parseFloat(price),
+          status: 'Pending',
+          history: [], // initialize empty
+        });
+
+        //  Update the history array separately
+        await updateDoc(shipmentRef, {
+          history: [
+            {
+              action: 'Created',
+              user: user.uid,
+            },
+          ],
+        });
+
+        toast.success('Shipment created successfully');
         onClose();
       } else {
         setShowAddFunds(true);
       }
     } catch (err) {
-      console.error('Error checking or updating balance:', err);
+      console.error('Error processing shipment:', err);
+      toast.error('Failed to create shipment');
+    } finally{
+      setLoading(false)
     }
   };
-
   return (
     <div
       ref={overlayRef}
@@ -166,7 +191,7 @@ export default function CreateShipmentModal({ onClose }) {
             type="submit"
             className="col-span-full bg-gray-900 active:bg-gray-700 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg"
           >
-            Submit Shipment
+            {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Submit Shipment'}
           </button>
         </form>
       </div>
