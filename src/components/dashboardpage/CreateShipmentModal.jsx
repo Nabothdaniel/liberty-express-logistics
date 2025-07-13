@@ -1,9 +1,17 @@
 import React, { useRef, useState } from 'react';
 import { FiX } from 'react-icons/fi';
+import { useAtomValue } from 'jotai';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { userAtom } from '../../atoms/authAtom';
+import { db } from '../../firebase/firebase';
+import { toast } from 'react-toastify';
+// import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3'; // Flutterwave (optional)
 
 export default function CreateShipmentModal({ onClose }) {
   const overlayRef = useRef();
   const [price, setPrice] = useState(null);
+  const [showAddFunds, setShowAddFunds] = useState(false);
+  const user = useAtomValue(userAtom);
 
   const [formData, setFormData] = useState({
     sender: '',
@@ -19,10 +27,9 @@ export default function CreateShipmentModal({ onClose }) {
     priority: false,
   });
 
-  const ratePerKg = 5.5; // Example rate
+  const ratePerKg = 5.5;
 
-  const calculatePrice = (data) => {
-    const { weight, length, width, height } = data;
+  const calculatePrice = ({ weight, length, width, height }) => {
     const volumetricWeight = (length * width * height) / 5000;
     const chargeableWeight = Math.max(weight, volumetricWeight);
     return (chargeableWeight * ratePerKg).toFixed(2);
@@ -36,37 +43,57 @@ export default function CreateShipmentModal({ onClose }) {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const newData = {
+    const updated = {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     };
-    setFormData(newData);
+    setFormData(updated);
 
-    // Trigger live price update if key fields are present
-    const { weight, length, width, height } = newData;
+    const { weight, length, width, height } = updated;
     if (weight && length && width && height) {
-      setPrice(calculatePrice({
-        weight: parseFloat(weight),
-        length: parseFloat(length),
-        width: parseFloat(width),
-        height: parseFloat(height),
-      }));
+      setPrice(
+        calculatePrice({
+          weight: parseFloat(weight),
+          length: parseFloat(length),
+          width: parseFloat(width),
+          height: parseFloat(height),
+        })
+      );
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Shipment submitted:', formData);
-    onClose();
+    if (!price || !user?.uid) return;
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      const userData = userSnap.data();
+
+      if (userData.balance >= parseFloat(price)) {
+        await updateDoc(userRef, {
+          balance: userData.balance - parseFloat(price),
+        });
+
+        console.log('Shipment submitted:', formData);
+        toast.success('shipment made succesfully')
+        onClose();
+      } else {
+        setShowAddFunds(true);
+      }
+    } catch (err) {
+      console.error('Error checking or updating balance:', err);
+    }
   };
 
   return (
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}
-      className="fixed inset-0 px-6 bg-black/50 backdrop-blur-sm z-50 py-20 flex items-center justify-center"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm overflow-y-auto"
     >
-      <div className="bg-white rounded-xl w-full max-w-2xl p-6 relative shadow-lg">
+      <div className="bg-white rounded-xl w-full max-w-2xl mx-auto my-20 p-6 relative shadow-lg">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 cursor-pointer text-gray-500 hover:text-gray-800"
@@ -99,6 +126,42 @@ export default function CreateShipmentModal({ onClose }) {
             </div>
           )}
 
+          {showAddFunds && (
+            <div className="col-span-full bg-red-50 p-4 rounded border border-red-200 text-red-700">
+              <p className="mb-2">Insufficient balance. Please fund your wallet to continue.</p>
+
+              {/* Flutterwave button placeholder */}
+              {/*
+              <FlutterWaveButton
+                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                text="Fund Wallet"
+                callback={(response) => {
+                  console.log('Flutterwave response:', response);
+                  closePaymentModal();
+                  setShowAddFunds(false);
+                }}
+                onClose={() => {}}
+                options={{
+                  public_key: 'FLWPUBK_TEST-xxxxxxx',
+                  tx_ref: `tx-${Date.now()}`,
+                  amount: 100,
+                  currency: 'USD',
+                  payment_options: 'card,ussd,banktransfer',
+                  customer: {
+                    email: user.email,
+                    name: user.fullName,
+                  },
+                  customizations: {
+                    title: 'Liberty Express',
+                    description: 'Wallet Top-up',
+                    logo: 'https://yourdomain.com/logo.png',
+                  },
+                }}
+              />
+              */}
+            </div>
+          )}
+
           <button
             type="submit"
             className="col-span-full bg-gray-900 active:bg-gray-700 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg"
@@ -110,4 +173,3 @@ export default function CreateShipmentModal({ onClose }) {
     </div>
   );
 }
-
