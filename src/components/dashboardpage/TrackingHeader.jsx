@@ -9,7 +9,7 @@ export default function TrackingOrdersHeader() {
     <>
       <div className="flex flex-row items-start md:items-center justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-lg md:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-lg md:text-4xl font-bold text-gray-900">Dashboard</h1>
           <div className="text-sm text-gray-600 mt-1">
             <span>
               Today • {new Date().toLocaleDateString('en-US', {
