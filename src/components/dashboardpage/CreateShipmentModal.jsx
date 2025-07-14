@@ -1,3 +1,4 @@
+// Updated CreateShipmentModal.jsx
 import { useRef, useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import { useAtomValue } from 'jotai';
@@ -5,14 +6,15 @@ import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 'fir
 import { userAtom } from '../../atoms/authAtom';
 import { db } from '../../firebase/firebase';
 import { toast } from 'react-toastify';
-// import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3'; // Flutterwave (optional)
+import { useNavigate } from 'react-router-dom';
 
 export default function CreateShipmentModal({ onClose }) {
   const overlayRef = useRef();
   const [price, setPrice] = useState(null);
   const [showAddFunds, setShowAddFunds] = useState(false);
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const user = useAtomValue(userAtom);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     sender: '',
@@ -24,7 +26,7 @@ export default function CreateShipmentModal({ onClose }) {
     length: '',
     width: '',
     height: '',
-    date: '',
+    deliveryDate: '', 
     priority: false,
   });
 
@@ -67,7 +69,7 @@ export default function CreateShipmentModal({ onClose }) {
     e.preventDefault();
     if (!price || !user?.uid) return;
 
-      setLoading(true);
+    setLoading(true);
 
     try {
       const userRef = doc(db, 'users', user.uid);
@@ -75,48 +77,51 @@ export default function CreateShipmentModal({ onClose }) {
       const userData = userSnap.data();
 
       if (userData.balance >= parseFloat(price)) {
-        // Deduct user balance
         await updateDoc(userRef, {
           balance: userData.balance - parseFloat(price),
         });
 
-        // S Create the shipment
         const shipmentRef = await addDoc(collection(db, 'shipments'), {
           ...formData,
           userId: user.uid,
           createdAt: serverTimestamp(),
           price: parseFloat(price),
           status: 'Pending',
-          history: [], // initialize empty
+          trackingCode: `TRK-${Date.now().toString().slice(-4)}`,
+          history: [],
         });
 
-        //  Update the history array separately
         await updateDoc(shipmentRef, {
           history: [
             {
               action: 'Created',
               user: user.uid,
+              timestamp: new Date().toISOString(),
             },
           ],
         });
 
         toast.success('Shipment created successfully');
         onClose();
+
+        // Redirect to tracking page with ID
+       // navigate(`/track/${shipmentRef.id}`);
       } else {
         setShowAddFunds(true);
       }
     } catch (err) {
       console.error('Error processing shipment:', err);
       toast.error('Failed to create shipment');
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm overflow-y-auto md:overflow-y-hidden max-h-screen h-screen"
     >
       <div className="bg-white rounded-xl w-full max-w-2xl mx-auto my-20 p-6 relative shadow-lg">
         <button
@@ -138,7 +143,7 @@ export default function CreateShipmentModal({ onClose }) {
           <input name="length" type="number" step="0.1" placeholder="Length (cm)" className="input" required onChange={handleChange} />
           <input name="width" type="number" step="0.1" placeholder="Width (cm)" className="input" required onChange={handleChange} />
           <input name="height" type="number" step="0.1" placeholder="Height (cm)" className="input" required onChange={handleChange} />
-          <input name="date" type="date" className="input-style" required onChange={handleChange} />
+          <input name="deliveryDate" type="date" className="input-style" placeholder="Expected Delivery Date" onChange={handleChange} />
 
           <label className="flex items-center space-x-2 col-span-full text-sm text-gray-700">
             <input type="checkbox" name="priority" onChange={handleChange} />
@@ -154,36 +159,7 @@ export default function CreateShipmentModal({ onClose }) {
           {showAddFunds && (
             <div className="col-span-full bg-red-50 p-4 rounded border border-red-200 text-red-700">
               <p className="mb-2">Insufficient balance. Please fund your wallet to continue.</p>
-
-              {/* Flutterwave button placeholder */}
-              {/*
-              <FlutterWaveButton
-                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
-                text="Fund Wallet"
-                callback={(response) => {
-                  console.log('Flutterwave response:', response);
-                  closePaymentModal();
-                  setShowAddFunds(false);
-                }}
-                onClose={() => {}}
-                options={{
-                  public_key: 'FLWPUBK_TEST-xxxxxxx',
-                  tx_ref: `tx-${Date.now()}`,
-                  amount: 100,
-                  currency: 'USD',
-                  payment_options: 'card,ussd,banktransfer',
-                  customer: {
-                    email: user.email,
-                    name: user.fullName,
-                  },
-                  customizations: {
-                    title: 'Liberty Express',
-                    description: 'Wallet Top-up',
-                    logo: 'https://yourdomain.com/logo.png',
-                  },
-                }}
-              />
-              */}
+              {/* Flutterwave button can go here */}
             </div>
           )}
 
@@ -191,7 +167,11 @@ export default function CreateShipmentModal({ onClose }) {
             type="submit"
             className="col-span-full bg-gray-900 active:bg-gray-700 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg"
           >
-            {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Submit Shipment'}
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              'Submit Shipment'
+            )}
           </button>
         </form>
       </div>

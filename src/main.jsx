@@ -14,6 +14,7 @@ import Login from './pages/Login.jsx'
 import Landing from './pages/Landing.jsx'
 import Dashboard from './pages/Dashboard.jsx';
 import Signup from './pages/Signup.jsx';
+import Track from './pages/TrackingDashboard.jsx';
 import ProtectedRoute from './components/protectedRoute.jsx';
 
 
@@ -37,6 +38,22 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <Signup />,
+  },
+  {
+    path: '/track',
+    element: (
+      <ProtectedRoute>
+        <Track />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/track/:id',
+    element: (
+      <ProtectedRoute>
+        <Track />
+      </ProtectedRoute>
+    ),
   }
 ])
 

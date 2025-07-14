@@ -1,126 +1,156 @@
 import {
-  LineChart,
-  Line,
   ResponsiveContainer,
+  BarChart,
+  Bar,
   Tooltip,
-  Area,
   XAxis,
-} from 'recharts';
-import { FiTrendingUp } from 'react-icons/fi';
-import { useState } from 'react';
+  YAxis,
+} from 'recharts'
+import { useEffect, useState } from 'react';
+import { FiPackage } from 'react-icons/fi';
+import { collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
+import { db } from '../../firebase/firebase';
+import { useAuth } from '../../auth/useAuth';
 
-const dataByPeriod = {
-  Day: [
-    { time: '8 AM', value: 40 },
-    { time: '10 AM', value: 60 },
-    { time: '12 PM', value: 45 },
-    { time: '2 PM', value: 70 },
-    { time: '4 PM', value: 65 },
-    { time: '6 PM', value: 90 },
-  ],
-  Week: [
-    { time: 'Mon', value: 97 },
-    { time: 'Tue', value: 105 },
-    { time: 'Wed', value: 120 },
-    { time: 'Thu', value: 130 },
-    { time: 'Fri', value: 110 },
-    { time: 'Sat', value: 150 },
-    { time: 'Sun', value: 145 },
-  ],
-  Month: [
-    { time: 'Week 1', value: 380 },
-    { time: 'Week 2', value: 420 },
-    { time: 'Week 3', value: 500 },
-    { time: 'Week 4', value: 470 },
-  ],
+const periods = ['Day', 'Week', 'Month'];
+
+const getStartTimestamp = (period) => {
+  const now = new Date();
+  switch (period) {
+    case 'Day':
+      return Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), now.getDate())); // today
+    case 'Week': {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      return Timestamp.fromDate(startOfWeek);
+    }
+    case 'Month':
+      return Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), 1)); // 1st of month
+    default:
+      return Timestamp.fromDate(now);
+  }
 };
 
 const AnalyticsSection = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('Week');
-  const data = dataByPeriod[selectedPeriod];
+  const [statusCounts, setStatusCounts] = useState([]);
+  const { user } = useAuth();
 
-  const periods = ['Day', 'Week', 'Month'];
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const startTimestamp = getStartTimestamp(selectedPeriod);
+
+    const q = query(
+      collection(db, 'shipments'),
+      where('userId', '==', user.uid),
+      where('createdAt', '>=', startTimestamp)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const statusMap = {};
+      snapshot.forEach((doc) => {
+        const status = doc.data().status || 'Unknown';
+        statusMap[status] = (statusMap[status] || 0) + 1;
+      });
+
+      const formatted = Object.entries(statusMap).map(([label, count]) => ({
+        label,
+        count,
+      }));
+
+      setStatusCounts(formatted);
+    });
+
+    return () => unsubscribe();
+  }, [selectedPeriod, user?.uid]);
+
+  const total = statusCounts.reduce((sum, d) => sum + d.count, 0);
 
   return (
     <div className="bg-white p-6 rounded-xl border border-gray-200">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Analytic View</h3>
-        <div className="flex flex-wrap items-center gap-2">
+        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <FiPackage className="text-gray-600" />
+          Shipment Analytics
+        </h3>
+        <div className="flex gap-2">
           {periods.map((period) => (
             <button
               key={period}
               onClick={() => setSelectedPeriod(period)}
-              className={`px-3 py-1 text-sm rounded-full transition ${
-                selectedPeriod === period
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`px-3 py-1 text-sm rounded-full ${selectedPeriod === period
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               {period}
             </button>
           ))}
-          <FiTrendingUp className="w-4 h-4 text-gray-600" />
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-8 mb-6">
-        <div>
-          <div className="flex items-center text-gray-600 text-sm mb-1">
-            Minimal number <FiTrendingUp className="w-4 h-4 ml-1" />
+      {/* Summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 text-center">
+        {statusCounts.map((d) => (
+          <div key={d.label}>
+            <div className="text-sm text-gray-600">{d.label}</div>
+            <div className="text-xl font-bold text-gray-800">{d.count}</div>
           </div>
-          <div className="text-2xl font-bold text-gray-900">97</div>
-        </div>
+        ))}
         <div>
-          <div className="flex items-center text-gray-600 text-sm mb-1">
-            Average number <FiTrendingUp className="w-4 h-4 ml-1" />
-          </div>
-          <div className="text-2xl font-bold text-gray-900">120</div>
-        </div>
-        <div>
-          <div className="flex items-center text-gray-600 text-sm mb-1">
-            Maximum number <FiTrendingUp className="w-4 h-4 ml-1" />
-          </div>
-          <div className="text-2xl font-bold text-gray-900">150</div>
+          <div className="text-sm text-gray-600">Total</div>
+          <div className="text-xl font-bold text-gray-800">{total}</div>
         </div>
       </div>
 
-      {/* Line Chart with Area Shadow */}
+      {/* Bar Chart */}
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
-            <defs>
-              <linearGradient id="colorShadow" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#111827" stopOpacity={0.2} />
-                <stop offset="100%" stopColor="#111827" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <XAxis dataKey="time" hide />
+          <BarChart
+            data={statusCounts}
+            margin={{
+              top: 10,
+              right: 10,
+              left:-40,
+              bottom: 20,
+            }}
+          >
+            <XAxis
+              dataKey="label"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#6b7280', fontSize: 12 }}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              allowDecimals={false}
+              tick={{ fill: '#6b7280', fontSize: 12 }}
+            />
             <Tooltip
-              contentStyle={{ backgroundColor: '#f9fafb', border: 'none' }}
-              labelStyle={{ color: '#6b7280' }}
-              cursor={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+              contentStyle={{
+                backgroundColor: '#ffffff',
+                border: 'none',
+                boxShadow: '0 0 0 1px #e5e7eb',
+                fontSize: '12px',
+              }}
+              cursor={{ fill: '#f3f4f6' }}
+              labelStyle={{ display: 'none' }}
               formatter={(value) => [`${value}`, 'Shipments']}
             />
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke="#111827"
-              strokeWidth={2.5}
-              fill="url(#colorShadow)"
-              dot={false}
-              isAnimationActive
+            <Bar
+              dataKey="count"
+              fill="#111827"
+              radius={[8, 8, 0, 0]}
+              barSize={40}
             />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#111827"
-              strokeWidth={3}
-              dot={false}
-              isAnimationActive
-            />
-          </LineChart>
+          </BarChart>
         </ResponsiveContainer>
       </div>
+
     </div>
   );
 };

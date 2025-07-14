@@ -52,7 +52,7 @@ const DashboardUserBox = ({ user, loading }) => {
         <div className="relative" ref={ref}>
             {/* Avatar Button */}
             <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm cursor-pointer"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm cursor-pointer"
                 style={{ background: gradient }}
                 onClick={() => setOpen((prev) => !prev)}
             >

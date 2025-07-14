@@ -3,12 +3,13 @@ import { FiMenu, FiX } from 'react-icons/fi';
 import { RxDashboard } from 'react-icons/rx';
 import { useAuth } from '../../auth/useAuth';
 import DashboardUserBox from './user-box';
+import { Link } from 'react-router-dom';
 
 const DashboardHeader = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, loading } = useAuth();
 
-  const navItems = [{ name: 'Dashboard', active: true }];
+  const navItems = [{ name: 'Dashboard', active: true,link:'/dashboard' },{name:'Track',active:false,link:'/track'}];
 
   return (
     <>
@@ -23,14 +24,14 @@ const DashboardHeader = () => {
           } lg:hidden`}
       >
         <div className="flex items-center justify-between p-4">
-          <h2 className="text-lg font-bold text-gray-900">Liberty Express</h2>
+          <Link to={'/dashboard'} className="text-lg font-bold text-gray-900">Liberty Express</Link>
           <button onClick={() => setSidebarOpen(false)} className="text-gray-600 hover:text-gray-900">
             <FiX className="w-6 h-6" />
           </button>
         </div>
-        <nav className="p-4">
+        <nav className="p-4 flex flex-col">
           {navItems.map((item) => (
-            <button
+            <Link to={item.link}
               key={item.name}
               className={`w-full text-left mb-2 px-4 py-2 rounded text-sm font-medium transition-colors cursor-pointer ${item.active
                   ? 'bg-gray-200 text-gray-700'
@@ -39,7 +40,7 @@ const DashboardHeader = () => {
             >
               <RxDashboard className="inline-block md:hidden mr-2" />
               {item.name}
-            </button>
+            </Link>
           ))}
         </nav>
       </aside>
@@ -55,11 +56,11 @@ const DashboardHeader = () => {
               <FiMenu className="w-6 h-6" />
             </button>
 
-            <h1 className="text-xl font-bold text-gray-900 hidden lg:block">Liberty Express</h1>
+            <Link to={'/dashboard'} className="text-xl font-bold text-gray-900 hidden lg:block">Liberty Express</Link>
 
             <nav className="hidden lg:flex space-x-6">
               {navItems.map((item) => (
-                <button
+                <Link to={item.link}
                   key={item.name}
                   className={`px-4 py-2 cursor-pointer rounded-full text-sm font-medium transition-colors ${item.active ? 'bg-gray-100 text-gray-700' : 'text-gray-600 hover:text-gray-900'
                     }`}
@@ -68,7 +69,7 @@ const DashboardHeader = () => {
                     <span className="inline-block w-2 h-2 bg-gray-500 rounded-full mr-2" />
                   )}
                   {item.name}
-                </button>
+                </Link >
               ))}
             </nav>
           </div>

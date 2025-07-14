@@ -1,30 +1,11 @@
 import { FiMoreHorizontal } from 'react-icons/fi';
+import { useAtomValue } from 'jotai';
+import { shipmentsAtom } from '../../atoms/shipmentsAtom';
+import useShipments from '../../hooks/use-shipments';
 
 const Shipments = () => {
-  const activities = [
-    {
-      id: '#10986-08-776sg',
-      category: 'Electronic',
-      weight: '2.600 t',
-      company: 'Generic SO.',
-      arrivalTime: '6th July, 2023',
-      route: 'London - Prague',
-      shipper: 'DHL',
-      price: '$5,678.00',
-      status: 'Delivered',
-    },
-    {
-      id: '#10568-12-873fwg',
-      category: 'Building materials',
-      weight: '6.568 t',
-      company: 'Abuilding CO.',
-      arrivalTime: '2nd July, 2023',
-      route: 'Berlin - Poznan',
-      shipper: 'Amazon',
-      price: '$12,500.00',
-      status: 'Delivered',
-    },
-  ];
+  const shipments = useAtomValue(shipmentsAtom);
+  useShipments();
 
   const statusFilters = ['All', 'Delivered', 'In transit', 'Pending', 'Processing'];
 
@@ -52,7 +33,7 @@ const Shipments = () => {
             </div>
             <div className="flex items-center justify-between sm:justify-normal space-x-2 text-sm text-gray-600">
               <span className="hidden sm:block">Customize</span>
-              <span className="hidden sm:block">1-10 of 40</span>
+              <span className="hidden sm:block">1-10 of {shipments.length}</span>
               <div className="flex space-x-1">
                 <button className="p-1">←</button>
                 <button className="p-1">→</button>
@@ -70,7 +51,7 @@ const Shipments = () => {
               <th className="px-4 py-3 text-left font-medium text-gray-500">
                 <input type="checkbox" className="rounded" />
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-500">Order ID</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-500">Tracking ID</th>
               <th className="px-4 py-3 text-left font-medium text-gray-500">Category</th>
               <th className="px-4 py-3 text-left font-medium text-gray-500">Weight</th>
               <th className="px-4 py-3 text-left font-medium text-gray-500">Company</th>
@@ -83,22 +64,22 @@ const Shipments = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 bg-white">
-            {activities.map((activity) => (
-              <tr key={activity.id} className="hover:bg-gray-50 whitespace-nowrap">
+            {shipments.map((shipment) => (
+              <tr key={shipment.id} className="hover:bg-gray-50 whitespace-nowrap">
                 <td className="px-4 py-3">
                   <input type="checkbox" className="rounded" />
                 </td>
-                <td className="px-4 py-3 font-medium text-gray-900">{activity.id}</td>
-                <td className="px-4 py-3 text-gray-700">{activity.category}</td>
-                <td className="px-4 py-3 text-gray-700">{activity.weight}</td>
-                <td className="px-4 py-3 text-gray-700">{activity.company}</td>
-                <td className="px-4 py-3 text-gray-700">{activity.arrivalTime}</td>
-                <td className="px-4 py-3 text-gray-700">{activity.route}</td>
-                <td className="px-4 py-3 text-gray-700">{activity.shipper}</td>
-                <td className="px-4 py-3 font-medium text-gray-900">{activity.price}</td>
+                <td className="px-4 py-3 font-medium text-gray-900">{shipment.trackingCode}</td>
+                <td className="px-4 py-3 text-gray-700">{shipment.cargoType}</td>
+                <td className="px-4 py-3 text-gray-700">{shipment.weight} kg</td>
+                <td className="px-4 py-3 text-gray-700">{shipment.sender}</td>
+                <td className="px-4 py-3 text-gray-700">{shipment.deliveryDate || 'N/A'}</td>
+                <td className="px-4 py-3 text-gray-700">{shipment.origin} - {shipment.destination}</td>
+                <td className="px-4 py-3 text-gray-700">{shipment.receiver}</td>
+                <td className="px-4 py-3 font-medium text-gray-900">${shipment.price?.toFixed(2)}</td>
                 <td className="px-4 py-3">
                   <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                    {activity.status}
+                    {shipment.status}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
