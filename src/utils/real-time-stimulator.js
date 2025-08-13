@@ -4,14 +4,14 @@ export class RealTimeSimulator {
     this.intervalId = null
     this.callbacks = []
     this.currentProgress = 0
-    this.currentLocation = { lat: -6.2088, lng: 106.8456 }
+    this.currentLocation = { lat: -6.2088, lng: 106.8456 } // Start at Jakarta
     this.routePoints = [
       { lat: -6.2088, lng: 106.8456, name: "Jakarta", time: "18:49 PM" },
-      { lat: -6.3500, lng: 106.9200, name: "Bekasi", time: "19:15 PM" },
+      { lat: -6.35, lng: 106.92, name: "Bekasi", time: "19:15 PM" },
       { lat: -6.5088, lng: 107.0186, name: "Karawang", time: "19:45 PM" },
-      { lat: -6.6500, lng: 107.2000, name: "Purwakarta", time: "20:30 PM" },
-      { lat: -6.8000, lng: 107.4000, name: "Subang", time: "21:15 PM" },
-      { lat: -6.9175, lng: 107.6191, name: "Bandung", time: "22:12 PM" }
+      { lat: -6.65, lng: 107.2, name: "Purwakarta", time: "20:30 PM" },
+      { lat: -6.8, lng: 107.4, name: "Subang", time: "21:15 PM" },
+      { lat: -6.9175, lng: 107.6191, name: "Bandung", time: "22:12 PM" },
     ]
     this.currentPointIndex = 0
     this.statusProgression = [
@@ -21,7 +21,7 @@ export class RealTimeSimulator {
       { status: "in_transit", progress: 60, message: "Package in transit - Karawang" },
       { status: "in_transit", progress: 80, message: "Package in transit - Purwakarta" },
       { status: "out_for_delivery", progress: 95, message: "Out for delivery in Bandung" },
-      { status: "delivered", progress: 100, message: "Package delivered successfully" }
+      { status: "delivered", progress: 100, message: "Package delivered successfully" },
     ]
     this.currentStatusIndex = 0
   }
@@ -33,12 +33,12 @@ export class RealTimeSimulator {
 
   // Remove callback
   removeCallback(callback) {
-    this.callbacks = this.callbacks.filter(cb => cb !== callback)
+    this.callbacks = this.callbacks.filter((cb) => cb !== callback)
   }
 
   // Notify all callbacks
   notifyCallbacks(data) {
-    this.callbacks.forEach(callback => callback(data))
+    this.callbacks.forEach((callback) => callback(data))
   }
 
   // Start simulation
@@ -76,27 +76,27 @@ export class RealTimeSimulator {
     // Move to next status
     this.currentStatusIndex++
     const currentStatus = this.statusProgression[this.currentStatusIndex]
-    
+
     // Update location along route
     if (this.currentPointIndex < this.routePoints.length - 1) {
       this.currentPointIndex++
       this.currentLocation = {
         lat: this.routePoints[this.currentPointIndex].lat,
-        lng: this.routePoints[this.currentPointIndex].lng
+        lng: this.routePoints[this.currentPointIndex].lng,
       }
     }
 
     // Create timeline event
     const newEvent = {
       time: this.routePoints[this.currentPointIndex]?.time || new Date().toLocaleTimeString(),
-      date: new Date().toLocaleDateString('en-GB', { 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric' 
+      date: new Date().toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
       }),
       status: currentStatus.message,
       location: this.routePoints[this.currentPointIndex]?.name || "Unknown",
-      completed: true
+      completed: true,
     }
 
     // Notify all listeners
@@ -106,7 +106,7 @@ export class RealTimeSimulator {
       location: this.currentLocation,
       newEvent: newEvent,
       currentPoint: this.routePoints[this.currentPointIndex],
-      estimatedDelivery: this.calculateEstimatedDelivery()
+      estimatedDelivery: this.calculateEstimatedDelivery(),
     })
   }
 
@@ -114,16 +114,16 @@ export class RealTimeSimulator {
   calculateEstimatedDelivery() {
     const remainingPoints = this.routePoints.length - this.currentPointIndex - 1
     const estimatedMinutes = remainingPoints * 30 // 30 minutes per checkpoint
-    
+
     if (estimatedMinutes <= 0) return "Delivered"
-    
+
     const hours = Math.floor(estimatedMinutes / 60)
     const minutes = estimatedMinutes % 60
-    
+
     if (hours > 0) {
-      return `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minute${minutes !== 1 ? 's' : ''}`
+      return `${hours} hour${hours > 1 ? "s" : ""} ${minutes} minute${minutes !== 1 ? "s" : ""}`
     }
-    return `${minutes} minute${minutes !== 1 ? 's' : ''}`
+    return `${minutes} minute${minutes !== 1 ? "s" : ""}`
   }
 
   // Get current simulation state
@@ -131,10 +131,10 @@ export class RealTimeSimulator {
     return {
       isRunning: this.isRunning,
       progress: this.statusProgression[this.currentStatusIndex]?.progress || 0,
-      status: this.statusProgression[this.currentStatusIndex]?.status || 'pending',
+      status: this.statusProgression[this.currentStatusIndex]?.status || "pending",
       location: this.currentLocation,
       currentPoint: this.routePoints[this.currentPointIndex],
-      estimatedDelivery: this.calculateEstimatedDelivery()
+      estimatedDelivery: this.calculateEstimatedDelivery(),
     }
   }
 
