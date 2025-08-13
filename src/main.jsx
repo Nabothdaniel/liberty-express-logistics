@@ -15,8 +15,9 @@ import Landing from './pages/Landing.jsx'
 import Dashboard from './pages/Dashboard.jsx';
 import Signup from './pages/Signup.jsx';
 import Track from './pages/TrackingDashboard.jsx';
+import UserChat from './components/chats/user-chats.jsx';
 import ProtectedRoute from './components/protectedRoute.jsx';
-
+import AdminConversationsList from './pages/AdminChats.jsx';
 
 const router = createBrowserRouter([
   {
@@ -40,11 +41,17 @@ const router = createBrowserRouter([
     element: <Signup />,
   },
   {
+    path: '/chat',
+    element: <UserChat />
+  },
+  {
+    path: '/admin-chats',
+    element: <AdminConversationsList />
+  },
+  {
     path: '/track',
     element: (
-      <ProtectedRoute>
-        <Track />
-      </ProtectedRoute>
+      <Track />
     ),
   },
   {

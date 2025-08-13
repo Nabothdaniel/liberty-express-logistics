@@ -5,7 +5,7 @@ export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
 
-    const routeToLogin = () => navigate("/signup");
+    const routeToTrack = () => navigate("/track");
 
     return (
         <header className="bg-white text-black border-b md:border-0 md:rounded-md border-gray-200 fixed top-0 md:top-3 left-0 md:left-10 right-0 md:right-10 z-[999]">
@@ -55,19 +55,13 @@ export default function Header() {
                         </li>
                         {/* Mobile Buttons */}
                         <li className="block md:hidden px-4 mt-4">
-                            <Link
-                                to="/login"
-                                className=" text-white mb-3 text-center bg-gray-900 px-4 py-3 rounded-md text-sm font-semibold shadow-sm active:bg-gray-700 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 block lg:inline lg:bg-transparent lg:shadow-none lg:px-0 lg:py-0 lg:rounded-none lg:text-gray-900 lg:hover:text-gray-700 lg:active:text-gray-700 lg:font-medium lg:hover:underline
-  "
-                            >
-                                Login
-                            </Link>
+                           
 
                             <button
-                                onClick={routeToLogin}
-                                className="w-full border-gray-500 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold"
+                                onClick={routeToTrack}
+                                className="w-full bg-gray-900 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold"
                             >
-                                Get Started
+                                Track
                             </button>
                         </li>
                     </ul>
@@ -75,14 +69,11 @@ export default function Header() {
 
                 {/* Desktop Buttons */}
                 <div className="hidden md:flex items-center gap-4">
-                    <Link to="/login" className="text-gray-900 hover:text-gray-700 active:text-gray-700 font-medium hover:underline">
-                        Login
-                    </Link>
                     <button
-                        onClick={routeToLogin}
+                        onClick={routeToTrack}
                         className="border-gray-500 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold"
                     >
-                        Get Started
+                        Track Cargo
                     </button>
                 </div>
             </div>

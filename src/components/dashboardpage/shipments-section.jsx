@@ -58,7 +58,6 @@ const Shipments = () => {
               <th className="px-4 py-3 text-left font-medium text-gray-500">Arrival</th>
               <th className="px-4 py-3 text-left font-medium text-gray-500">Route</th>
               <th className="px-4 py-3 text-left font-medium text-gray-500">Shipper</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-500">Price</th>
               <th className="px-4 py-3 text-left font-medium text-gray-500">Status</th>
               <th className="px-4 py-3 text-right"></th>
             </tr>
@@ -76,7 +75,6 @@ const Shipments = () => {
                 <td className="px-4 py-3 text-gray-700">{shipment.deliveryDate || 'N/A'}</td>
                 <td className="px-4 py-3 text-gray-700">{shipment.origin} - {shipment.destination}</td>
                 <td className="px-4 py-3 text-gray-700">{shipment.receiver}</td>
-                <td className="px-4 py-3 font-medium text-gray-900">${shipment.price?.toFixed(2)}</td>
                 <td className="px-4 py-3">
                   <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
                     {shipment.status}
