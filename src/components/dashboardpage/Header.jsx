@@ -9,7 +9,7 @@ const DashboardHeader = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, loading } = useAuth();
 
-  const navItems = [{ name: 'Dashboard', active: true,link:'/dashboard' },{name:'Track',active:false,link:'/track'}];
+  const navItems = [{ name: 'Dashboard', active: true,link:'/dashboard' }];
 
   return (
     <>

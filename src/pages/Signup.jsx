@@ -218,7 +218,7 @@ const Signup = () => {
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
         email,
-        balance: 0,
+        role:'admin',
         username: contactPerson,
         createdAt: new Date().toISOString()
       });

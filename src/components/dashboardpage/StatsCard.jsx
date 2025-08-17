@@ -54,29 +54,21 @@ const StatsCards = () => {
   }, [user?.uid]);
 
   const stats = [
-    {
-      title: 'Balance',
-      value: `$${balance.toLocaleString()}`,
-      icon: FiDollarSign,
-    },
+
     {
       title: 'Total Shipments',
       value: totalShipments,
-      change: '+5.45%',
-      positive: true,
       icon: FiPackage,
     },
     {
       title: 'Delivered Shipments',
       value: deliveredShipments,
-      change: '+5.45%',
-      positive: true,
       icon: FiTruck,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {stats.map((stat, index) => {
         const IconComponent = stat.icon;
         return (

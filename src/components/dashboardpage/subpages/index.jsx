@@ -2,16 +2,17 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Search, Filter, Bell, MapPin, Package, Phone, Copy, Home, Play, Pause, RotateCcw } from "lucide-react"
-import CourierInfo from "../components/courier/courier-info"
-import CourierChat from "../components/courier/courier-chat"
-import { StatusManager } from "../utils/status-manager";
-import StatusBadge from "../components/courier/status-badge"
-import StatusActions from "../components/courier/status-action"
-import { simulator } from "../utils/real-time-stimulator"
+import CourierInfo from "./courier-info"
+import CourierChat from "./courier-chat"
+import { StatusManager } from "../utils/status-manager"
+import StatusBadge from "./status-badge"
+import StatusActions from "./status-actions"
+import { simulator } from "../utils/real-time-simulator"
 
 export default function TrackingDashboard() {
   const [selectedTracking, setSelectedTracking] = useState("#C024")
   const [searchQuery, setSearchQuery] = useState("")
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(false)
   const [currentProgress, setCurrentProgress] = useState(75)
