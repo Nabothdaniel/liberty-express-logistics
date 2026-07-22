@@ -7,26 +7,19 @@ import Img3 from '../../assets/images/landing/plane3.jpg'
 
 const services = [
   {
-    title: 'On the Road to Reliability, Unleashing the Power of Road Freight Solutions',
+    title: 'Global Service',
     description:
-      'Experience the reliability of our Road Freight services, ensuring your goods reach their destination with precision.',
+      'We always provide people a complete solution focused moving Flight, plane.',
     image: Img1, 
-    ctas: ['International Freight', 'Domestic Freight'],
+    ctas: ['International Flights', 'Worldwide Booking'],
   },
   {
-    title: 'Seamlessly Across the Seas with Ocean Freight Services',
+    title: 'Local Service',
     description:
-      'Expand your global reach with dependable and secure Ocean Freight logistics.',
+      'We knowledge of the local terrain which enables us to provide unmatched secondary distribution service.',
     image: Img2,
     ctas: [],
-  },
-  {
-    title: 'Elevate Your Shipments with Plane Cargo Services',
-    description:
-      'Accelerate deliveries with our Air Freight solutions for high-priority shipments.',
-    image: Img3,
-    ctas: [],
-  },
+  }
 ];
 
 export default function Services() {
@@ -35,8 +28,9 @@ export default function Services() {
       <div className="text-center mb-12">
         <span className="text-sm uppercase tracking-wide text-gray-500">Services</span>
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-          Comprehensive Logistics Solutions
+          Fly to Your Dream & Destinations
         </h2>
+        <p className="mt-2 text-gray-600">At FlyWay, We have a deep commitment to always delivering first-class service</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

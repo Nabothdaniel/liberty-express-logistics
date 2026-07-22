@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
 import { useSetAtom } from 'jotai';
 import { shipmentsAtom } from '../atoms/shipmentsAtom';
 import { db } from '../firebase/firebase';
@@ -12,16 +12,23 @@ export default function useShipments() {
   useEffect(() => {
     if (!user?.uid) return;
 
-    const q = query(collection(db, 'shipments'), where('userId', '==', user.uid));
+    // Admin sees all flights; regular users see only their own
+    const q = user.role === 'admin'
+      ? query(collection(db, 'flights'), orderBy('createdAt', 'desc'))
+      : query(
+          collection(db, 'flights'),
+          where('userId', '==', user.uid),
+          orderBy('createdAt', 'desc')
+        );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const shipments = snapshot.docs.map((doc) => ({
+      const flights = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setShipments(shipments);
+      setShipments(flights);
     });
 
     return () => unsubscribe();
-  }, [user?.uid, setShipments]);
+  }, [user?.uid, user?.role, setShipments]);
 }

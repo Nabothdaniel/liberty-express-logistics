@@ -4,19 +4,19 @@ import Img from '../../assets/images/landing/about.jpg';
 
 const features = [
   {
-    title: 'AI-Powered Tracking',
+    title: 'Hassle-Free Booking',
     content:
-      'We use cutting-edge artificial intelligence to track your cargo in real-time, ensuring full visibility from origin to destination.',
+      'We\'ve streamlined the booking process to ensure it\'s effortless and user-friendly. With just a few clicks, you can secure your flight tickets, saving you time and stress.',
   },
   {
-    title: 'Cost-Effective Solutions',
+    title: 'Competitive Prices',
     content:
-      'Our logistics strategies are designed to minimize cost while maintaining speed and reliability, tailored to your budget.',
+      'Our platform constantly scours the web for the best deals and discounts. We offer you the most competitive prices available, helping you get more value for your money.',
   },
   {
     title: '24/7 Customer Support',
     content:
-      'Our dedicated support team is available around the clock to assist with your inquiries and shipment status updates.',
+      'Your peace of mind matters to us. Our dedicated customer support team is available around the clock to assist you with any questions or concerns, ensuring a smooth journey.',
   },
 ];
 
@@ -33,10 +33,10 @@ export default function About() {
         {/* Left: Accordion */}
         <div className="max-w-2xl">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-            About <span className="text-blue-600">Liberty Express</span>
+            Your Adventure Awaits in the <span className="text-blue-600">Skies.</span>
           </h2>
           <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-            We specialize in seamless logistics solutions that ensure your shipments reach their destination safely, efficiently, and on time—every time.
+            At FlyWay, we're committed to making your travel experience exceptional from start to finish. Here's why we stand out as your go-to platform for booking flights:
           </p>
           <div className="space-y-5">
             {features.map((feature, index) => (
