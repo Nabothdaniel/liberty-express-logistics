@@ -1,82 +1,95 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import logoImg from "../../assets/images/logo.png";
 
 export default function Header() {
-    const [menuOpen, setMenuOpen] = useState(false);
-    const navigate = useNavigate();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isTrackingPage = pathname === "/track";
 
-    const routeToTrack = () => navigate("/track");
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    return (
-        <header className="bg-white text-black border-b md:border-0 md:rounded-md border-gray-200 fixed top-0 md:top-3 left-0 md:left-10 right-0 md:right-10 z-[999]">
-            <div className="md:max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center justify-between">
-                <div className="flex flex-row items-center justify-between w-full md:w-auto">
-                    {/* Logo */}
-                    <a href="/" className="text-xl font-semibold text-gray-800">
-                        Liberty Express
-                    </a>
+  const headerBgClass = isScrolled || isTrackingPage || mobileMenuOpen
+    ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100"
+    : "bg-transparent";
 
-                    {/* Toggle Button */}
-                    <button
-                        onClick={() => setMenuOpen(!menuOpen)}
-                        className="inline-flex items-center p-2 text-sm cursor-pointer text-gray-500 rounded-lg md:hidden active:bg-gray-200 hover:bg-gray-200"
-                    >
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                fillRule="evenodd"
-                                d="M3 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
-                    </button>
-                </div>
-
-                {/* Nav Menu */}
-                <div
-                    className={`transition-all duration-500 ease-in-out overflow-hidden md:flex md:items-center w-full md:w-auto ${menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-                        } md:max-h-full md:opacity-100`}
-                    style={{ transitionProperty: "max-height, opacity" }}
-                >
-                    <ul className="flex flex-col md:flex-row md:space-x-6 py-4 md:py-0 text-left w-full md:w-auto">
-                        <li>
-                            <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded-md hover:text-blue-600">
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded-md hover:text-blue-600">
-                                About Us
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded-md hover:text-blue-600">
-                                Product & Solutions
-                            </a>
-                        </li>
-                        {/* Mobile Buttons */}
-                        <li className="block md:hidden px-4 mt-4">
-                           
-
-                            <button
-                                onClick={routeToTrack}
-                                className="w-full bg-gray-900 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold"
-                            >
-                                Track
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-
-                {/* Desktop Buttons */}
-                <div className="hidden md:flex items-center gap-4">
-                    <button
-                        onClick={routeToTrack}
-                        className="border-gray-500 border-2 text-gray-500 active:bg-gray-700 hover:text-gray-700 rounded-lg px-3 py-2 cursor-pointer font-bold"
-                    >
-                        Track Cargo
-                    </button>
-                </div>
+  return (
+    <>
+      <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${headerBgClass}`}>
+        <div className="flex items-center justify-between px-6 py-4 max-w-[1400px] mx-auto">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-[#1E1E1E]">
+            <div className="relative h-8 w-8 md:h-10 md:w-10 flex items-center justify-center">
+              <Image src={logoImg} alt="Liberty Express Logo" fill style={{objectFit:"contain"}} priority />
             </div>
-        </header>
-    );
+            Liberty Express
+          </Link>
+          
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#1E1E1E]">
+            <Link href="/" className="hover:opacity-70 transition-opacity">Home</Link>
+            <Link href="/#services" className="hover:opacity-70 transition-opacity">Services</Link>
+            <Link href="/track" className="hover:opacity-70 transition-opacity">Tracking</Link>
+            <Link href="/#about" className="hover:opacity-70 transition-opacity">About Us</Link>
+          </nav>
+
+          {/* Right Action */}
+          <div className="hidden md:flex items-center gap-4">
+            <span className="text-sm font-medium text-[#1E1E1E]">EN</span>
+            <Link href="/track" className="bg-[#1E1E1E] text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors shadow-sm">
+              Track Flight
+            </Link>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="md:hidden text-[#1E1E1E] p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Nav Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-[90] bg-white pt-20 px-6"
+          >
+            <nav className="flex flex-col gap-6 text-xl font-medium text-[#1E1E1E] mt-8">
+              <Link href="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+              <Link href="/#services" onClick={() => setMobileMenuOpen(false)}>Services</Link>
+              <Link href="/track" onClick={() => setMobileMenuOpen(false)}>Tracking</Link>
+              <Link href="/#about" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
+              
+              <Link 
+                href="/track" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-6 bg-[#1E1E1E] text-white px-6 py-4 rounded-full text-center text-lg font-semibold shadow-md"
+              >
+                Track Flight
+              </Link>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
 }

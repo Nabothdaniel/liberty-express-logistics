@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FiPackage, FiDollarSign, FiTruck } from 'react-icons/fi';
+import { FiSend, FiCheckCircle, FiClock } from 'react-icons/fi';
 import { useAuth } from '../../auth/useAuth';
 import { db } from '../../firebase/firebase';
 import {
@@ -7,68 +7,76 @@ import {
   query,
   where,
   getCountFromServer,
-  doc,
-  getDoc,
 } from 'firebase/firestore';
 
 const StatsCards = () => {
   const { user } = useAuth();
-  const [balance, setBalance] = useState(0);
-  const [totalShipments, setTotalShipments] = useState(0);
-  const [deliveredShipments, setDeliveredShipments] = useState(0);
+  const [totalFlights, setTotalFlights] = useState(0);
+  const [arrivedFlights, setArrivedFlights] = useState(0);
+  const [inFlightCount, setInFlightCount] = useState(0);
 
   useEffect(() => {
     const fetchStats = async () => {
       if (!user?.uid) return;
 
       try {
-        // Fetch balance
-        const userRef = doc(db, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          setBalance(userSnap.data().balance || 0);
-        }
+        // Base query — admin sees all, user sees own
+        const baseFilter =
+          user.role === 'admin'
+            ? collection(db, 'flights')
+            : null;
 
-        // Count total shipments
-        const totalQuery = query(
-          collection(db, 'shipments'),
-          where('userId', '==', user.uid)
-        );
-        const totalSnap = await getCountFromServer(totalQuery);
-        setTotalShipments(totalSnap.data().count);
+        const userFilter = (status) =>
+          user.role === 'admin'
+            ? query(collection(db, 'flights'), where('status', '==', status))
+            : query(
+                collection(db, 'flights'),
+                where('userId', '==', user.uid),
+                where('status', '==', status)
+              );
 
-        // Count delivered shipments
-        const deliveredQuery = query(
-          collection(db, 'shipments'),
-          where('userId', '==', user.uid),
-          where('status', '==', 'Delivered')
-        );
-        const deliveredSnap = await getCountFromServer(deliveredQuery);
-        setDeliveredShipments(deliveredSnap.data().count);
+        const totalQ =
+          user.role === 'admin'
+            ? query(collection(db, 'flights'))
+            : query(collection(db, 'flights'), where('userId', '==', user.uid));
+
+        const [totalSnap, arrivedSnap, inFlightSnap] = await Promise.all([
+          getCountFromServer(totalQ),
+          getCountFromServer(userFilter('arrived')),
+          getCountFromServer(userFilter('in_flight')),
+        ]);
+
+        setTotalFlights(totalSnap.data().count);
+        setArrivedFlights(arrivedSnap.data().count);
+        setInFlightCount(inFlightSnap.data().count);
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error('Error fetching flight stats:', error);
       }
     };
 
     fetchStats();
-  }, [user?.uid]);
+  }, [user?.uid, user?.role]);
 
   const stats = [
-
     {
-      title: 'Total Shipments',
-      value: totalShipments,
-      icon: FiPackage,
+      title: 'Total Bookings',
+      value: totalFlights,
+      icon: FiSend,
     },
     {
-      title: 'Delivered Shipments',
-      value: deliveredShipments,
-      icon: FiTruck,
+      title: 'In Flight',
+      value: inFlightCount,
+      icon: FiClock,
+    },
+    {
+      title: 'Arrived',
+      value: arrivedFlights,
+      icon: FiCheckCircle,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {stats.map((stat, index) => {
         const IconComponent = stat.icon;
         return (
@@ -77,17 +85,6 @@ const StatsCards = () => {
               <div>
                 <p className="text-gray-600 text-sm">{stat.title}</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                {stat.change && (
-                  <div className="flex items-center mt-2">
-                    <span
-                      className={`text-sm font-medium ${
-                        stat.positive ? 'text-green-600' : 'text-red-600'
-                      }`}
-                    >
-                      {stat.change}
-                    </span>
-                  </div>
-                )}
               </div>
               <div className="p-3 bg-gray-100 rounded-lg">
                 <IconComponent className="w-6 h-6 text-gray-600" />

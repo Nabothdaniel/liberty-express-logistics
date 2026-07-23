@@ -27,7 +27,7 @@ export default function TrackingOrdersHeader() {
             className="px-6 py-2 text-sm md:text-md  bg-gray-900 cursor-pointer text-white rounded-lg hover:bg-gray-700 active:bg-gray-800"
             onClick={() => setShowModal(true)}
           >
-            Create shipment
+            Book a Flight
           </button>
         </div>
       </div>

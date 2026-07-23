@@ -1,53 +1,64 @@
-// Status definitions and configurations
+// Status definitions for flight bookings
 export const TRACKING_STATUSES = {
-  PENDING: {
-    key: "pending",
-    label: "Pending",
-    description: "Package is waiting to be processed",
-    color: "bg-gray-500",
-    textColor: "text-gray-800",
-    bgColor: "bg-gray-100",
-    progress: 0,
-    allowedActions: ["cancel", "edit"],
-    nextStatuses: ["processing"],
-  },
-  PROCESSING: {
-    key: "processing",
-    label: "Processing",
-    description: "Package is being prepared for shipment",
+  BOOKED: {
+    key: "booked",
+    label: "Booked",
+    description: "Flight booking confirmed",
     color: "bg-blue-500",
     textColor: "text-blue-800",
     bgColor: "bg-blue-100",
-    progress: 15,
-    allowedActions: ["track"],
-    nextStatuses: ["in_transit"],
+    progress: 10,
+    allowedActions: ["cancel", "edit"],
+    nextStatuses: ["check_in", "cancelled"],
   },
-  IN_TRANSIT: {
-    key: "in_transit",
-    label: "In transit",
-    description: "Package is on the way to destination",
-    color: "bg-orange-500",
-    textColor: "text-orange-800",
-    bgColor: "bg-orange-100",
-    progress: 50,
-    allowedActions: ["track", "contact_courier"],
-    nextStatuses: ["out_for_delivery", "delayed"],
+  CHECK_IN: {
+    key: "check_in",
+    label: "Check-in Open",
+    description: "Online check-in is available",
+    color: "bg-indigo-500",
+    textColor: "text-indigo-800",
+    bgColor: "bg-indigo-100",
+    progress: 30,
+    allowedActions: ["check_in", "contact_support"],
+    nextStatuses: ["boarding", "cancelled", "delayed"],
   },
-  OUT_FOR_DELIVERY: {
-    key: "out_for_delivery",
-    label: "Out for delivery",
-    description: "Package is out for final delivery",
+  BOARDING: {
+    key: "boarding",
+    label: "Boarding",
+    description: "Passengers are boarding the aircraft",
     color: "bg-yellow-500",
     textColor: "text-yellow-800",
     bgColor: "bg-yellow-100",
-    progress: 85,
-    allowedActions: ["track", "contact_courier", "reschedule"],
-    nextStatuses: ["delivered", "failed_delivery"],
+    progress: 55,
+    allowedActions: ["contact_support"],
+    nextStatuses: ["in_flight", "delayed"],
   },
-  DELIVERED: {
-    key: "delivered",
-    label: "Delivered",
-    description: "Package has been successfully delivered",
+  IN_FLIGHT: {
+    key: "in_flight",
+    label: "In Flight",
+    description: "Aircraft is currently airborne",
+    color: "bg-orange-500",
+    textColor: "text-orange-800",
+    bgColor: "bg-orange-100",
+    progress: 75,
+    allowedActions: ["track"],
+    nextStatuses: ["landed", "delayed"],
+  },
+  LANDED: {
+    key: "landed",
+    label: "Landed",
+    description: "Aircraft has landed at destination",
+    color: "bg-teal-500",
+    textColor: "text-teal-800",
+    bgColor: "bg-teal-100",
+    progress: 90,
+    allowedActions: ["track"],
+    nextStatuses: ["arrived"],
+  },
+  ARRIVED: {
+    key: "arrived",
+    label: "Arrived",
+    description: "Passenger has arrived at destination",
     color: "bg-green-500",
     textColor: "text-green-800",
     bgColor: "bg-green-100",
@@ -58,53 +69,36 @@ export const TRACKING_STATUSES = {
   DELAYED: {
     key: "delayed",
     label: "Delayed",
-    description: "Package delivery has been delayed",
+    description: "Flight has been delayed",
     color: "bg-red-500",
     textColor: "text-red-800",
     bgColor: "bg-red-100",
-    progress: 30,
+    progress: 20,
     allowedActions: ["track", "contact_support"],
-    nextStatuses: ["in_transit", "cancelled"],
-  },
-  FAILED_DELIVERY: {
-    key: "failed_delivery",
-    label: "Failed delivery",
-    description: "Delivery attempt was unsuccessful",
-    color: "bg-red-500",
-    textColor: "text-red-800",
-    bgColor: "bg-red-100",
-    progress: 90,
-    allowedActions: ["reschedule", "contact_courier", "return_to_sender"],
-    nextStatuses: ["out_for_delivery", "returned"],
+    nextStatuses: ["boarding", "cancelled"],
   },
   CANCELLED: {
     key: "cancelled",
     label: "Cancelled",
-    description: "Package shipment has been cancelled",
+    description: "Flight booking has been cancelled",
     color: "bg-gray-500",
     textColor: "text-gray-800",
     bgColor: "bg-gray-100",
     progress: 0,
-    allowedActions: ["reorder"],
-    nextStatuses: [],
-  },
-  RETURNED: {
-    key: "returned",
-    label: "Returned",
-    description: "Package has been returned to sender",
-    color: "bg-purple-500",
-    textColor: "text-purple-800",
-    bgColor: "bg-purple-100",
-    progress: 100,
     allowedActions: ["reorder", "contact_support"],
     nextStatuses: [],
   },
 }
 
-// Status management functions
+// Status management class
 export class StatusManager {
   static getStatus(statusKey) {
-    return TRACKING_STATUSES[statusKey.toUpperCase()] || TRACKING_STATUSES.PENDING
+    if (!statusKey) return TRACKING_STATUSES.BOOKED
+    return (
+      TRACKING_STATUSES[statusKey.toUpperCase()] ||
+      Object.values(TRACKING_STATUSES).find((s) => s.key === statusKey.toLowerCase()) ||
+      TRACKING_STATUSES.BOOKED
+    )
   }
 
   static canTransitionTo(currentStatus, newStatus) {
@@ -117,11 +111,12 @@ export class StatusManager {
     return status.allowedActions
   }
 
-  static updateStatus(trackingId, newStatus, reason = "") {
-    // This would typically make an API call to update the status
-    console.log(`Updating ${trackingId} to ${newStatus}. Reason: ${reason}`)
+  static getAllStatuses() {
+    return Object.values(TRACKING_STATUSES)
+  }
 
-    // Return updated tracking data
+  static updateStatus(trackingId, newStatus, reason = "") {
+    console.log(`Updating ${trackingId} to ${newStatus}. Reason: ${reason}`)
     return {
       trackingId,
       status: newStatus,
@@ -129,94 +124,35 @@ export class StatusManager {
       reason,
     }
   }
-
-  static getStatusHistory(trackingId) {
-    // This would typically fetch from an API
-    // For now, return mock data
-    return [
-      {
-        status: "pending",
-        timestamp: "2025-02-19T10:00:00Z",
-        location: "Jakarta, Indonesia",
-        description: "Package received and pending processing",
-      },
-      {
-        status: "processing",
-        timestamp: "2025-02-19T12:00:00Z",
-        location: "Jakarta, Indonesia",
-        description: "Package is being prepared for shipment",
-      },
-      {
-        status: "in_transit",
-        timestamp: "2025-02-19T18:49:00Z",
-        location: "Jakarta, Indonesia",
-        description: "Package has left the origin facility",
-      },
-    ]
-  }
-
-  static getEstimatedDelivery(statusKey, distance = 0) {
-    const status = this.getStatus(statusKey)
-
-    // Calculate estimated delivery based on status and distance
-    const baseHours = {
-      pending: 24,
-      processing: 12,
-      in_transit: Math.max(2, distance / 50), // Rough calculation
-      out_for_delivery: 4,
-      delivered: 0,
-      delayed: 48,
-      failed_delivery: 24,
-    }
-
-    const hours = baseHours[status.key] || 24
-    const deliveryDate = new Date()
-    deliveryDate.setHours(deliveryDate.getHours() + hours)
-
-    return deliveryDate
-  }
 }
 
 // Action handlers
 export const StatusActions = {
   track: (trackingId) => {
     console.log(`Tracking ${trackingId}`)
-    // Navigate to detailed tracking view
   },
 
   cancel: (trackingId) => {
-    if (confirm("Are you sure you want to cancel this shipment?")) {
-      return StatusManager.updateStatus(trackingId, "cancelled", "Cancelled by user")
-    }
+    return StatusManager.updateStatus(trackingId, "cancelled", "Cancelled by user")
   },
 
-  reschedule: (trackingId) => {
-    console.log(`Rescheduling delivery for ${trackingId}`)
-    // Open reschedule modal
-  },
-
-  contact_courier: (trackingId) => {
-    console.log(`Contacting courier for ${trackingId}`)
-    // Open chat or call courier
+  check_in: (trackingId) => {
+    console.log(`Check-in for ${trackingId}`)
   },
 
   contact_support: (trackingId) => {
     console.log(`Contacting support for ${trackingId}`)
-    // Open support chat
   },
 
   rate: (trackingId) => {
-    console.log(`Rating delivery for ${trackingId}`)
-    // Open rating modal
+    console.log(`Rating flight ${trackingId}`)
   },
 
   report_issue: (trackingId) => {
     console.log(`Reporting issue for ${trackingId}`)
-    // Open issue reporting form
   },
 
   reorder: (trackingId) => {
-    console.log(`Reordering ${trackingId}`)
-    // Navigate to reorder flow
+    console.log(`Rebooking ${trackingId}`)
   },
 }

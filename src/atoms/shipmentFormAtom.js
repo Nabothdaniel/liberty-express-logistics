@@ -1,33 +1,24 @@
 import { atomWithStorage } from "jotai/utils"
 
-
 export const initialDraft = {
-  // Sender info
-  senderName: "",
-  senderEmail: "",
-  senderPhone: "",
-  senderAddress: "",
-  senderCity: "",
-  senderPostalCode: "",
+  // Traveller Info
+  firstName: "",
+  lastName: "",
+  dateOfBirth: "",
+  sex: "",
+  email: "",
 
-  // Receiver info
-  receiverName: "",
-  receiverEmail: "",
-  receiverPhone: "",
-  receiverAddress: "",
-  receiverCity: "",
-  receiverPostalCode: "",
+  // Flight Details
+  fromLocation: "",
+  toLocation: "",
+  flightDate: "",
+  arrivalDate: "",
 
-  // Parcel info
-  cargoType: "",
-  weight: "",
-  length: "",
-  width: "",
-  height: "",
-  deliveryDate: "",
-  specialInstructions: "",
+  // Preferences
+  flightType: "", // economy | business | first_class
+  priceRange: "", // budget | mid-range | premium | luxury
 }
 
 // Persistent draft storage using Jotai
-export const shipmentDraftAtom = atomWithStorage("shipment-draft", initialDraft)
-export const currentStepAtom = atomWithStorage("shipment-step", 1)
+export const shipmentDraftAtom = atomWithStorage("flight-draft", initialDraft)
+export const currentStepAtom = atomWithStorage("flight-step", 1)
