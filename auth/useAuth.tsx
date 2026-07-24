@@ -8,9 +8,8 @@ import {
   browserLocalPersistence
 } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { useSetAtom } from 'jotai';
 import { auth, db } from '../firebase/firebase';
-import { userAtom } from '../atoms/authAtom';
+import { useAuthStore } from '../store/authStore';
 import { Plane } from 'lucide-react';
 
 interface AuthContextType {
@@ -26,7 +25,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }) => {
-  const setUser = useSetAtom(userAtom);
+  const setUser = useAuthStore((state) => state.setUser);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const [user, setUserState] = useState(null);

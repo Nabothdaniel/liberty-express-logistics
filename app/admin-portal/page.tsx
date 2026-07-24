@@ -224,9 +224,9 @@ export default function SpecialAdminPortal() {
     }
   };
 
-  const [flights, setFlights] = useState([]);
-  const [selectedFlight, setSelectedFlight] = useState(null);
-  const [editingFlight, setEditingFlight] = useState(null);
+  const [flights, setFlights] = useState<any[]>([]);
+  const [selectedFlight, setSelectedFlight] = useState<any>(null);
+  const [editingFlight, setEditingFlight] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -275,7 +275,7 @@ export default function SpecialAdminPortal() {
     if (!user) return;
     const q = query(collection(db, "flights"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      const data: any[] = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
       setFlights(data);
       if (data.length > 0 && !selectedFlight) setSelectedFlight(data[0]);
       setLoading(false);
@@ -285,12 +285,12 @@ export default function SpecialAdminPortal() {
 
   useEffect(() => {
     if (selectedFlight) {
-      const updated = flights.find((f) => f.id === selectedFlight.id);
+      const updated = flights.find((f: any) => f.id === selectedFlight.id);
       if (updated) setSelectedFlight(updated);
     }
   }, [flights]);
 
-  const filtered = flights.filter((f) => {
+  const filtered = flights.filter((f: any) => {
     const matchesSearch =
       !searchQuery ||
       `${f.firstName} ${f.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||

@@ -21,9 +21,9 @@ const features = [
 ];
 
 export default function About() {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const toggle = (index) => {
+  const toggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
@@ -68,7 +68,7 @@ export default function About() {
         {/* Right: Image */}
         <div className="w-full h-[28rem] rounded-2xl overflow-hidden shadow-xl">
           <img
-            src={Img}
+            src={Img.src}
             alt="Liberty Express operations"
             className="w-full h-full object-cover"
           />

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { Plane } from 'lucide-react';
-import { useAtomValue } from 'jotai';
-import { shipmentsAtom } from '../../atoms/shipmentsAtom';
+import { useShipmentStore } from '../../store/shipmentStore';
 import useShipments from '../../hooks/use-shipments';
 import { StatusManager } from '../../utils/status-manager';
 
@@ -24,7 +23,7 @@ const classLabels = {
 }
 
 const Shipments = () => {
-  const flights = useAtomValue(shipmentsAtom);
+  const flights = useShipmentStore((state) => state.shipments);
   useShipments();
 
   const [activeFilter, setActiveFilter] = useState('All');

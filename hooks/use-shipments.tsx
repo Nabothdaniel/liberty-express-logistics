@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
 import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
-import { useSetAtom } from 'jotai';
-import { shipmentsAtom } from '../atoms/shipmentsAtom';
+import { useShipmentStore } from '../store/shipmentStore';
 import { db } from '../firebase/firebase';
 import { useAuth } from '../auth/useAuth';
 
 export default function useShipments() {
-  const setShipments = useSetAtom(shipmentsAtom);
+  const setShipments = useShipmentStore((state) => state.setShipments);
   const { user } = useAuth();
 
   useEffect(() => {

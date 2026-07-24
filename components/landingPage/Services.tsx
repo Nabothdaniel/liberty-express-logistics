@@ -40,7 +40,7 @@ export default function Services() {
             className="relative rounded-3xl overflow-hidden shadow-md group h-[450px]"
           >
             <img
-              src={service.image}
+              src={service.image.src}
               alt={service.title}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />

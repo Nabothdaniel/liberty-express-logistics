@@ -17,8 +17,8 @@ export default function StatusActionsComponent({ trackingId, status, onStatusUpd
     reorder: { icon: RotateCcw, label: "Reorder", color: "text-blue-600 hover:bg-blue-50" },
   }
 
-  const handleAction = (actionKey) => {
-    const result = window.StatusActions[actionKey](trackingId)
+  const handleAction = (actionKey: string) => {
+    const result = (window as any).StatusActions?.[actionKey]?.(trackingId)
     if (result && onStatusUpdate) {
       onStatusUpdate(result)
     }

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const SHIPPO_TOKEN = import.meta.env.VITE_SHIPPO_API_TOKEN;
+const SHIPPO_TOKEN = process.env.NEXT_PUBLIC_SHIPPO_API_TOKEN;
 
 const useShippingRates = () => {
   const [loading, setLoading] = useState(false);

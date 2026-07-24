@@ -1,7 +1,7 @@
-import { TRACKING_STATUSES } from "../../utils/status-manager"
+import { StatusManager } from "../../utils/status-manager"
 
-export default function StatusBadge({ status, showProgress = false, className = "" }) {
-  const statusConfig = TRACKING_STATUSES[status.toUpperCase()] || TRACKING_STATUSES.PENDING
+export default function StatusBadge({ status, showProgress = false, className = "" }: any) {
+  const statusConfig = StatusManager.getStatus(status)
 
   return (
     <div className={`inline-flex items-center space-x-2 ${className}`}>

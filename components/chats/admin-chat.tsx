@@ -1,13 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { db } from "./firebase"
+import { db } from "../../firebase/firebase"
 import { collection, onSnapshot, doc, updateDoc, orderBy, query } from "firebase/firestore"
 
 export default function AdminDashboard() {
-  const [conversations, setConversations] = useState([])
-  const [selectedUser, setSelectedUser] = useState(null)
-  const [messages, setMessages] = useState([])
+  const [conversations, setConversations] = useState<any[]>([])
+  const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [messages, setMessages] = useState<any[]>([])
 
   useEffect(() => {
     const q = query(collection(db, "conversations"), orderBy("lastUpdated", "desc"))

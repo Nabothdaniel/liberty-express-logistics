@@ -1,10 +1,10 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { useAtom } from "jotai"
+
 import { FiX, FiUser, FiCheck } from "react-icons/fi"
 import { Plane, MapPin, Calendar } from "lucide-react"
-import { shipmentDraftAtom, currentStepAtom, initialDraft } from "../../atoms/shipmentFormAtom"
+import { useShipmentFormStore, initialDraft } from "../../store/shipmentFormStore"
 import { db } from "../../firebase/firebase"
 import { collection, addDoc, Timestamp } from "firebase/firestore"
 import { useAuth } from "../../auth/useAuth"
@@ -30,14 +30,16 @@ const selectClass =
   "w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8A5A44] focus:border-transparent transition-all text-sm bg-white outline-none"
 
 export default function CreateShipmentModal({ onClose }) {
-  const overlayRef = useRef()
+  const overlayRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const { user } = useAuth()
 
-  const [formData, setFormData] = useAtom(shipmentDraftAtom)
-  const [currentStep, setCurrentStep] = useAtom(currentStepAtom)
+  const formData = useShipmentFormStore((state) => state.formData)
+  const setFormData = useShipmentFormStore((state) => state.setFormData)
+  const currentStep = useShipmentFormStore((state) => state.currentStep)
+  const setCurrentStep = useShipmentFormStore((state) => state.setCurrentStep)
 
   const handleOverlayClick = (e) => {
     if (e.target === overlayRef.current) onClose()
@@ -50,8 +52,8 @@ export default function CreateShipmentModal({ onClose }) {
   }
 
   // Per-step validation
-  const validateStep = (step) => {
-    const errs = {}
+  const validateStep = (step: number) => {
+    const errs: Record<string, string> = {}
     if (step === 1) {
       if (!formData.firstName?.trim()) errs.firstName = "First name is required"
       if (!formData.lastName?.trim()) errs.lastName = "Last name is required"

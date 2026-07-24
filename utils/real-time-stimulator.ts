@@ -1,4 +1,14 @@
 export class RealTimeSimulator {
+  isRunning: boolean;
+  intervalId: any;
+  callbacks: Function[];
+  currentProgress: number;
+  currentLocation: { lat: number; lng: number };
+  routePoints: any[];
+  currentPointIndex: number;
+  statusProgression: any[];
+  currentStatusIndex: number;
+
   constructor() {
     this.isRunning = false
     this.intervalId = null
@@ -27,17 +37,17 @@ export class RealTimeSimulator {
   }
 
   // Add callback for updates
-  onUpdate(callback) {
+  onUpdate(callback: Function) {
     this.callbacks.push(callback)
   }
 
   // Remove callback
-  removeCallback(callback) {
+  removeCallback(callback: Function) {
     this.callbacks = this.callbacks.filter((cb) => cb !== callback)
   }
 
   // Notify all callbacks
-  notifyCallbacks(data) {
+  notifyCallbacks(data: any) {
     this.callbacks.forEach((callback) => callback(data))
   }
 

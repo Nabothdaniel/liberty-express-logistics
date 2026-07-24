@@ -68,8 +68,8 @@ function TrackContent() {
   const searchParams = useSearchParams();
   const initialCode = searchParams ? searchParams.get("code") || "" : "";
 
-  const [flights, setFlights] = useState([]);
-  const [selectedFlight, setSelectedFlight] = useState(null);
+  const [flights, setFlights] = useState<any[]>([]);
+  const [selectedFlight, setSelectedFlight] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState(initialCode);
   const [loading, setLoading] = useState(true);
   const [focusLocation, setFocusLocation] = useState(null);
@@ -78,13 +78,13 @@ function TrackContent() {
   useEffect(() => {
     const q = query(collection(db, "flights"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      const data: any[] = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
       setFlights(data);
 
       if (data.length > 0) {
         if (initialCode) {
           const match = data.find(
-            (f) => (f.trackingCode || "").toLowerCase() === initialCode.toLowerCase()
+            (f: any) => (f.trackingCode || "").toLowerCase() === initialCode.toLowerCase()
           );
           if (match) setSelectedFlight(match);
           else setSelectedFlight(null);
@@ -99,12 +99,12 @@ function TrackContent() {
 
   useEffect(() => {
     if (selectedFlight) {
-      const updated = flights.find((f) => f.id === selectedFlight.id);
+      const updated = flights.find((f: any) => f.id === selectedFlight.id);
       if (updated) setSelectedFlight(updated);
     }
   }, [flights]);
 
-  const filtered = flights.filter((f) => {
+  const filtered = flights.filter((f: any) => {
     if (!searchQuery || !searchQuery.trim()) return false;
     
     // Only exact tracking code match to protect user privacy
