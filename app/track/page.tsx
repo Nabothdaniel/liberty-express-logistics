@@ -294,44 +294,7 @@ function TrackContent() {
                     </div>
                   </div>
 
-                  {/* Timeline / Live Updates (If any) */}
-                  {selectedFlight.statusHistory && selectedFlight.statusHistory.length > 0 && (
-                    <div className="mb-6">
-                       <h3 className="text-xs font-bold uppercase text-gray-400 mb-3 tracking-widest">Live Updates</h3>
-                       <div className="space-y-4 max-h-[150px] overflow-y-auto pr-2">
-                         {[...selectedFlight.statusHistory].reverse().map((entry, i) => {
-                           const hasLocation = entry.note && (entry.note.includes("at ") || entry.note.includes("in "));
-                           // naive location extraction for demo interactivity
-                           let extractedLoc = null;
-                           if (hasLocation) {
-                              const match = entry.note.match(/(?:at|in)\s+([A-Z][a-zA-Z\s]+)/);
-                              if (match) extractedLoc = match[1].trim();
-                           }
-                           
-                           return (
-                             <div 
-                               key={i} 
-                               className={`flex gap-3 p-2 rounded-xl transition-all ${extractedLoc ? "cursor-pointer hover:bg-gray-100" : ""}`}
-                               onClick={() => extractedLoc && setFocusLocation(extractedLoc)}
-                               title={extractedLoc ? "Click to view on map" : ""}
-                             >
-                               <div className="flex flex-col items-center">
-                                 <div className={`w-2 h-2 rounded-full ${extractedLoc ? "bg-blue-500 animate-pulse" : "bg-[#8A5A44]"} mt-1.5`} />
-                                 {i !== selectedFlight.statusHistory.length - 1 && <div className="w-px h-full bg-gray-200 mt-1" />}
-                               </div>
-                               <div className="pb-1">
-                                 <p className="text-sm font-medium text-gray-900">{entry.note || StatusManager.getStatus(entry.status).label}</p>
-                                 <p className="text-[10px] text-gray-400 font-medium mt-0.5">{new Date(entry.timestamp).toLocaleString()}</p>
-                                 {extractedLoc && (
-                                   <span className="text-[9px] uppercase tracking-wider text-blue-500 font-bold mt-1 inline-block">📍 View on Map</span>
-                                 )}
-                               </div>
-                             </div>
-                           );
-                         })}
-                       </div>
-                    </div>
-                  )}
+
 
                   {/* Actions */}
                   <div className="flex gap-2">

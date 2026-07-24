@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Filter, Bell, MapPin, Package, Save, X, Plane, ChevronDown, Plus, Edit3, CheckCircle, Clock, ShieldCheck, Copy } from "lucide-react";
+import { Search, Filter, Bell, MapPin, Package, Save, X, Plane, ChevronDown, Plus, Edit3, CheckCircle, Clock, ShieldCheck, Copy, LogOut, Menu } from "lucide-react";
 import { db } from "../../firebase/firebase";
 import {
   collection,
@@ -232,6 +232,44 @@ export default function SpecialAdminPortal() {
   const [loading, setLoading] = useState(true);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [activeTab, setActiveTab] = useState("live");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [confirmCancelId, setConfirmCancelId] = useState(null);
+
+  const handleCancelBooking = async () => {
+    if (!selectedFlight || selectedFlight.status === "cancelled") return;
+    
+    if (confirmCancelId !== selectedFlight.id) {
+      setConfirmCancelId(selectedFlight.id);
+      return;
+    }
+    
+    setIsCancelling(true);
+    try {
+      const flightRef = doc(db, "flights", selectedFlight.id);
+      await updateDoc(flightRef, {
+        status: "cancelled",
+        updatedAt: Timestamp.now(),
+        statusHistory: arrayUnion({
+          status: "cancelled",
+          timestamp: new Date().toISOString(),
+          updatedBy: user?.email || "Admin Portal",
+          note: "Booking cancelled by administrator."
+        })
+      });
+      toast.success("Booking cancelled successfully.");
+      setConfirmCancelId(null);
+    } catch (error) {
+      console.error("Error cancelling flight:", error);
+      toast.error("Failed to cancel booking.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  useEffect(() => {
+    setConfirmCancelId(null);
+  }, [selectedFlight?.id]);
 
   useEffect(() => {
     if (!user) return;
@@ -296,10 +334,18 @@ export default function SpecialAdminPortal() {
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden transition-opacity"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col flex-shrink-0">
-        <div className="p-6 border-b border-gray-100">
-          <Link href="/" className="flex items-center space-x-3">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}`}>
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+          <Link href="/" className="flex items-center space-x-3 shrink-0">
             <div className="relative w-8 h-8 bg-white p-1 rounded-lg shadow-sm flex items-center justify-center">
               <Image src={logoImg} alt="Liberty Express Logo" fill style={{objectFit:"contain"}} />
             </div>
@@ -307,11 +353,17 @@ export default function SpecialAdminPortal() {
               <span className="text-lg font-bold text-gray-900 tracking-tight">Liberty Express</span>
             </div>
           </Link>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden text-gray-400 hover:text-gray-900 hover:bg-gray-100 p-1.5 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        <div className="p-4 flex-1 space-y-1">
+        <div className="p-4 flex-1 space-y-1 overflow-y-auto">
           <button
-            onClick={() => setActiveTab("overview")}
+            onClick={() => { setActiveTab("overview"); setIsMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
               activeTab === "overview" ? "bg-[#8A5A44] text-white shadow-md" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
             }`}
@@ -321,7 +373,7 @@ export default function SpecialAdminPortal() {
           </button>
           
           <button
-            onClick={() => setActiveTab("live")}
+            onClick={() => { setActiveTab("live"); setIsMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
               activeTab === "live" ? "bg-[#8A5A44] text-white shadow-md" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
             }`}
@@ -335,7 +387,7 @@ export default function SpecialAdminPortal() {
           </div>
 
           <button
-            onClick={() => setShowBookingModal(true)}
+            onClick={() => { setShowBookingModal(true); setIsMobileMenuOpen(false); }}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
           >
             <Plus className="w-5 h-5" />
@@ -351,37 +403,49 @@ export default function SpecialAdminPortal() {
           </Link>
         </div>
 
-        <div className="p-4 border-t border-gray-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#8A5A44] text-white flex items-center justify-center font-bold text-xs uppercase">
-              {user?.email?.charAt(0) || "A"}
+        <div className="p-4 border-t border-gray-100">
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col gap-3 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#8A5A44] text-white flex items-center justify-center font-bold text-sm uppercase shadow-inner flex-shrink-0">
+                {user?.email?.charAt(0) || "A"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-sm text-gray-900 truncate">{user?.displayName || "Admin User"}</p>
+                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+              </div>
             </div>
-            <div className="text-xs truncate w-24">
-              <p className="font-bold text-gray-900 truncate">{user?.displayName || "Admin User"}</p>
-              <p className="text-gray-500 truncate">{user?.email}</p>
-            </div>
+            <button
+              onClick={() => signOut(auth)}
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-white border border-gray-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 text-gray-700 text-sm font-bold rounded-xl transition-all shadow-sm group"
+            >
+              <LogOut className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" />
+              Sign Out
+            </button>
           </div>
-          <button
-            onClick={() => signOut(auth)}
-            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </div>
       </aside>
 
       {/* Main Admin Workspace */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
         {/* Mobile Header */}
-        <header className="md:hidden bg-white border-b border-gray-200 px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Image src={logoImg} alt="Logo" width={24} height={24} />
-            <span className="font-bold text-gray-900">Admin</span>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={() => setActiveTab(activeTab === "overview" ? "live" : "overview")} className="text-xs font-bold bg-[#8A5A44] text-white px-3 py-1.5 rounded-lg">
-              Toggle View
+        <header className="md:hidden bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between z-30">
+          <div className="flex items-center space-x-3">
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)} 
+              className="p-1.5 -ml-1 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Menu className="w-6 h-6" />
             </button>
+            <div className="flex items-center space-x-2">
+              <Image src={logoImg} alt="Logo" width={24} height={24} />
+              <span className="font-bold text-gray-900">Admin</span>
+            </div>
+          </div>
+          {/* Active Tab Indicator for Mobile context */}
+          <div className="flex items-center">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-gray-100 px-2.5 py-1 rounded-full border border-gray-200">
+              {activeTab === "overview" ? "Dashboard" : "Live Info"}
+            </span>
           </div>
         </header>
 
@@ -703,10 +767,25 @@ export default function SpecialAdminPortal() {
                         </button>
                         <div className="h-px w-full bg-gray-100 my-1"></div>
                         <button 
-                          onClick={() => toast.info('Cancellation flow coming soon')}
-                          className="w-full py-2.5 bg-white border border-gray-200 text-red-500 font-bold rounded-lg hover:bg-red-50 transition-colors shadow-sm text-sm"
+                          onClick={handleCancelBooking}
+                          disabled={isCancelling || selectedFlight.status === "cancelled"}
+                          onBlur={() => setConfirmCancelId(null)}
+                          className={`w-full py-2.5 font-bold rounded-lg transition-colors shadow-sm text-sm flex items-center justify-center gap-2 ${
+                            selectedFlight.status === "cancelled" || isCancelling
+                              ? "bg-gray-50 border border-gray-200 text-gray-400 cursor-not-allowed"
+                              : confirmCancelId === selectedFlight.id
+                              ? "bg-red-500 border border-red-600 text-white hover:bg-red-600 animate-pulse"
+                              : "bg-white border border-gray-200 text-red-500 hover:bg-red-50"
+                          }`}
                         >
-                          Cancel Booking
+                          {isCancelling ? (
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                          ) : null}
+                          {selectedFlight.status === "cancelled" 
+                            ? "Booking Cancelled" 
+                            : confirmCancelId === selectedFlight.id
+                            ? "Are you sure? Click to confirm"
+                            : "Cancel Booking"}
                         </button>
                       </div>
                     </div>
