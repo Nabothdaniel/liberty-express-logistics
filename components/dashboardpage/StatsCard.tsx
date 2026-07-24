@@ -62,16 +62,22 @@ const StatsCards = () => {
       title: 'Total Bookings',
       value: totalFlights,
       icon: FiSend,
+      bgColor: 'bg-[#C8C6FF]', // Soft purple
+      iconBg: 'border-black/10 text-gray-800'
     },
     {
       title: 'In Flight',
       value: inFlightCount,
       icon: FiClock,
+      bgColor: 'bg-[#E3E7ED]', // Soft gray
+      iconBg: 'border-black/10 text-gray-800'
     },
     {
       title: 'Arrived',
       value: arrivedFlights,
       icon: FiCheckCircle,
+      bgColor: 'bg-[#FADDE4]', // Soft pink
+      iconBg: 'border-black/10 text-gray-800'
     },
   ];
 
@@ -80,15 +86,16 @@ const StatsCards = () => {
       {stats.map((stat, index) => {
         const IconComponent = stat.icon;
         return (
-          <div key={index} className="bg-white p-6 rounded-xl border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">{stat.title}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+          <div key={index} className={`${stat.bgColor} p-6 rounded-[2rem] flex flex-col justify-between h-48 shadow-sm transition-transform hover:-translate-y-1`}>
+            <div className="flex items-center">
+              <div className={`p-2 border border-black/10 rounded-full flex items-center justify-center ${stat.iconBg}`}>
+                <IconComponent className="w-5 h-5 text-gray-900" />
               </div>
-              <div className="p-3 bg-gray-100 rounded-lg">
-                <IconComponent className="w-6 h-6 text-gray-600" />
-              </div>
+            </div>
+            <div>
+              <p className="text-gray-900 font-semibold mb-1">{stat.title}</p>
+              <p className="text-gray-900/60 text-xs font-medium mb-3">{new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</p>
+              <p className="text-4xl font-extrabold text-gray-900 tracking-tight">{stat.value.toLocaleString()}</p>
             </div>
           </div>
         );

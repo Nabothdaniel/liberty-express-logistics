@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Filter, Bell, MapPin, Package, Save, X, Plane, ChevronDown, Plus, Edit3, CheckCircle, Clock, ShieldCheck } from "lucide-react";
+import { Search, Filter, Bell, MapPin, Package, Save, X, Plane, ChevronDown, Plus, Edit3, CheckCircle, Clock, ShieldCheck, Copy } from "lucide-react";
 import { db } from "../../firebase/firebase";
 import {
   collection,
@@ -75,7 +75,7 @@ function EditPanel({ flight, onClose, onSave, user }) {
     try {
       const flightRef = doc(db, "flights", flight.id);
       
-      const updateData = {
+      const updateData: Record<string, any> = {
         status: formData.status,
         fromLocation: formData.fromLocation,
         toLocation: formData.toLocation,
@@ -295,77 +295,107 @@ export default function SpecialAdminPortal() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Admin Header */}
-      <header className="bg-gray-900 text-white border-b border-gray-800 px-4 lg:px-8 py-4 shadow-md">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="relative w-10 h-10 bg-white p-1 rounded-xl shadow-md flex items-center justify-center">
-                <Image src={logoImg} alt="Liberty Express Logo" fill style={{objectFit:"contain"}} />
-              </div>
-              <div>
-                <span className="text-xl font-extrabold tracking-tight">Special Admin Portal</span>
-                <span className="block text-[10px] text-orange-400 uppercase tracking-widest font-semibold">
-                  Flight Logistics Management
-                </span>
-              </div>
-            </Link>
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col flex-shrink-0">
+        <div className="p-6 border-b border-gray-100">
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="relative w-8 h-8 bg-white p-1 rounded-lg shadow-sm flex items-center justify-center">
+              <Image src={logoImg} alt="Liberty Express Logo" fill style={{objectFit:"contain"}} />
+            </div>
+            <div>
+              <span className="text-lg font-bold text-gray-900 tracking-tight">Liberty Express</span>
+            </div>
+          </Link>
+        </div>
 
-            <div className="hidden md:flex items-center gap-1 bg-gray-800 p-1 rounded-xl">
-              <button
-                onClick={() => setActiveTab("live")}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  activeTab === "live" ? "bg-orange-500 text-white shadow-sm" : "text-gray-400 hover:text-white"
-                }`}
-              >
-                Live Tracking & Edit
-              </button>
-              <button
-                onClick={() => setActiveTab("overview")}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  activeTab === "overview" ? "bg-orange-500 text-white shadow-sm" : "text-gray-400 hover:text-white"
-                }`}
-              >
-                Dashboard Overview & Stats
-              </button>
+        <div className="p-4 flex-1 space-y-1">
+          <button
+            onClick={() => setActiveTab("overview")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+              activeTab === "overview" ? "bg-[#8A5A44] text-white shadow-md" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          >
+            <ShieldCheck className="w-5 h-5" />
+            Dashboard
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("live")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+              activeTab === "live" ? "bg-[#8A5A44] text-white shadow-md" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          >
+            <MapPin className="w-5 h-5" />
+            Live Tracking
+          </button>
+
+          <div className="pt-6 pb-2">
+            <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Quick Actions</p>
+          </div>
+
+          <button
+            onClick={() => setShowBookingModal(true)}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
+          >
+            <Plus className="w-5 h-5" />
+            Create Booking
+          </button>
+          
+          <Link
+            href="/track"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
+          >
+            <Plane className="w-5 h-5" />
+            Public Tracker
+          </Link>
+        </div>
+
+        <div className="p-4 border-t border-gray-100 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#8A5A44] text-white flex items-center justify-center font-bold text-xs uppercase">
+              {user?.email?.charAt(0) || "A"}
+            </div>
+            <div className="text-xs truncate w-24">
+              <p className="font-bold text-gray-900 truncate">{user?.displayName || "Admin User"}</p>
+              <p className="text-gray-500 truncate">{user?.email}</p>
             </div>
           </div>
-
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setShowBookingModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-bold rounded-xl hover:bg-green-700 transition-all shadow-md cursor-pointer"
-            >
-              <Plus className="w-4 h-4" /> Book Flight for Individual
-            </button>
-            <Link
-              href="/track"
-              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-gray-800 text-gray-300 hover:text-white rounded-xl border border-gray-700 transition-colors"
-            >
-              <Plane className="w-3.5 h-3.5" /> Public Tracker
-            </Link>
-            <button
-              onClick={() => signOut(auth)}
-              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-red-900/50 text-red-300 hover:text-white rounded-xl border border-red-800 transition-colors"
-            >
-              Logout
-            </button>
-          </div>
+          <button
+            onClick={() => signOut(auth)}
+            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
-      </header>
+      </aside>
 
       {/* Main Admin Workspace */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
+        {/* Mobile Header */}
+        <header className="md:hidden bg-white border-b border-gray-200 px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <Image src={logoImg} alt="Logo" width={24} height={24} />
+            <span className="font-bold text-gray-900">Admin</span>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => setActiveTab(activeTab === "overview" ? "live" : "overview")} className="text-xs font-bold bg-[#8A5A44] text-white px-3 py-1.5 rounded-lg">
+              Toggle View
+            </button>
+          </div>
+        </header>
+
+        <div className="flex-1 overflow-y-auto">
       {activeTab === "overview" ? (
         <div className="p-6 max-w-7xl mx-auto space-y-8 w-full flex-1">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Admin Flight Operations</h1>
-              <p className="text-sm text-gray-500">Overview of all booked flights, status analytics, and records.</p>
+              <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Hello, Admin</h1>
+              <p className="text-sm text-gray-500 font-medium mt-2">Overview of all booked flights and logistics</p>
             </div>
             <button
               onClick={() => setShowBookingModal(true)}
-              className="px-5 py-2.5 bg-gray-900 text-white font-bold text-sm rounded-xl hover:bg-gray-800"
+              className="hidden sm:flex px-5 py-2.5 bg-[#8A5A44] text-white font-bold text-sm rounded-xl hover:bg-[#7a4e3b] transition-colors"
             >
               + Create Flight Booking
             </button>
@@ -447,9 +477,21 @@ export default function SpecialAdminPortal() {
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
                           <div className={`w-2.5 h-2.5 rounded-full ${dotClass}`} />
-                          <span className="font-mono text-xs font-bold text-gray-900">
-                            {flight.trackingCode || flight.id.slice(0, 8).toUpperCase()}
-                          </span>
+                          <div className="flex items-center gap-1 group">
+                            <span className="font-mono text-xs font-bold text-gray-900">
+                              {flight.trackingCode || flight.id.slice(0, 8).toUpperCase()}
+                            </span>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(flight.trackingCode || flight.id.slice(0, 8).toUpperCase());
+                                toast.success("Tracking ID copied!");
+                              }}
+                              className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+                          </div>
                         </div>
                         <span className={`px-2 py-0.5 text-xs rounded-full border font-semibold ${colorClass}`}>
                           {statusConfig.label}
@@ -474,138 +516,202 @@ export default function SpecialAdminPortal() {
           </div>
 
           {/* Right — Admin Flight Detail & Live Edit Action Panel */}
-          <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-6 lg:p-10 bg-white">
             {!selectedFlight ? (
               <div className="flex flex-col items-center justify-center h-full text-gray-400 py-24">
-                <Plane className="w-12 h-12 mb-3" />
-                <p className="text-sm">Select a flight from the left list to view or edit</p>
+                <Plane className="w-12 h-12 mb-3 text-gray-200" />
+                <p className="text-sm font-medium">Select a booking from the list to view details</p>
               </div>
             ) : (
-              <div className="max-w-4xl mx-auto space-y-6">
-                {/* Admin Header & Edit Action Trigger */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="text-2xl font-mono font-extrabold text-gray-900">
-                        {selectedFlight.trackingCode}
-                      </span>
-                      <span
-                        className={`px-3.5 py-1 text-xs rounded-full border font-bold ${
-                          statusColors[selectedFlight.status] || "bg-gray-100 text-gray-700"
-                        }`}
-                      >
-                        {StatusManager.getStatus(selectedFlight.status).label}
-                      </span>
+              <div className="max-w-5xl mx-auto">
+                {/* Header matching booking.png */}
+                <div className="mb-6 border-b border-gray-100 pb-6">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-end">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900 mb-1 flex items-center gap-2">
+                        {selectedFlight.firstName} {selectedFlight.lastName} <span className="text-gray-300 font-light text-xl">|</span> <span className="text-gray-500 font-medium">Flight Booking</span>
+                      </h2>
+                      <div className="text-sm font-semibold text-gray-400 flex items-center gap-1.5">
+                        Booking ID: <span className="text-blue-500 font-mono tracking-wide">{selectedFlight.trackingCode}</span>
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(selectedFlight.trackingCode);
+                            toast.success("Tracking ID copied!");
+                          }}
+                          className="text-gray-400 hover:text-blue-500 transition-colors p-1 rounded hover:bg-blue-50"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
-                    <p className="text-gray-500 text-sm">
-                      Passenger: <span className="font-bold text-gray-900">{selectedFlight.firstName} {selectedFlight.lastName}</span> ({selectedFlight.email})
-                    </p>
                   </div>
-
-                  <button
-                    onClick={() => setEditingFlight(selectedFlight)}
-                    className="flex items-center justify-center gap-2 px-5 py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold text-sm rounded-xl transition-all shadow-md cursor-pointer"
-                  >
-                    <Edit3 className="w-4 h-4 text-orange-400" /> Edit Tracking Status Live
-                  </button>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                  <div className="flex items-center justify-between mb-2 text-sm">
-                    <span className="font-bold text-gray-700">Flight Status Progress</span>
-                    <span className="font-black text-gray-900">{StatusManager.getStatus(selectedFlight.status).progress}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div
-                      className="bg-orange-500 h-3 rounded-full transition-all duration-700 shadow-sm"
-                      style={{ width: `${StatusManager.getStatus(selectedFlight.status).progress}%` }}
-                    />
+                <div className="flex flex-col xl:flex-row gap-6">
+                  {/* Left Column (Information) */}
+                  <div className="flex-1 space-y-6">
+                    {/* Client Information */}
+                    <div className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div className="bg-gray-50/50 px-5 py-4 border-b border-gray-200 font-bold text-gray-900">
+                        Passenger Information
+                      </div>
+                      <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+                        <div>
+                          <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wider">Full Name</p>
+                          <p className="text-sm font-bold text-gray-900">{selectedFlight.firstName} {selectedFlight.lastName}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wider">Email</p>
+                          <p className="text-sm font-bold text-gray-900">{selectedFlight.email}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wider">Date of Birth</p>
+                          <p className="text-sm font-bold text-gray-900">{selectedFlight.dateOfBirth}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wider">Sex</p>
+                          <p className="text-sm font-bold text-gray-900">{selectedFlight.sex ? selectedFlight.sex.toUpperCase() : "—"}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Flight Details */}
+                    <div className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div className="bg-gray-50/50 px-5 py-4 border-b border-gray-200 font-bold text-gray-900">
+                        Flight Details
+                      </div>
+                      <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+                        <div>
+                          <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wider">Departure Date</p>
+                          <p className="text-sm font-bold text-gray-900">{selectedFlight.flightDate}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wider">Arrival Date</p>
+                          <p className="text-sm font-bold text-gray-900">{selectedFlight.arrivalDate}</p>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wider">Route Location</p>
+                          <p className="text-sm font-bold text-gray-900">{selectedFlight.fromLocation || "—"} → {selectedFlight.toLocation || "—"}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Service Details */}
+                    <div className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div className="bg-gray-50/50 px-5 py-4 border-b border-gray-200 font-bold text-gray-900">
+                        Service Details
+                      </div>
+                      <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+                        <div>
+                          <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wider">Flight Class</p>
+                          <p className="text-sm font-bold text-gray-900">{classLabels[selectedFlight.flightType] || selectedFlight.flightType}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wider">Price Range</p>
+                          <p className="text-sm font-bold text-gray-900">{selectedFlight.priceRange}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress & Tracking Updates */}
+                    <div className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div className="bg-gray-50/50 px-5 py-4 border-b border-gray-200 font-bold text-gray-900">
+                        Live Tracking Log
+                      </div>
+                      <div className="p-5">
+                        <div className="w-full bg-gray-100 rounded-full h-2 mb-6">
+                          <div
+                            className="bg-[#8A5A44] h-2 rounded-full transition-all duration-700 shadow-sm"
+                            style={{ width: `${StatusManager.getStatus(selectedFlight.status).progress}%` }}
+                          />
+                        </div>
+                        
+                        {selectedFlight.statusHistory && selectedFlight.statusHistory.length > 0 ? (
+                          <div className="space-y-4 mt-2">
+                            {[...selectedFlight.statusHistory].reverse().map((entry, i) => {
+                              const s = StatusManager.getStatus(entry.status);
+                              const dotClass = dotColors[entry.status] || "bg-gray-400";
+                              return (
+                                <div key={i} className="flex items-start gap-3 border-l-2 border-gray-100 pl-4 py-1">
+                                  <div className={`w-2.5 h-2.5 rounded-full mt-1 flex-shrink-0 -ml-[21px] ${dotClass}`} />
+                                  <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-sm font-bold text-gray-900">{s.label}</span>
+                                      <span className="text-xs font-semibold text-gray-400">
+                                        {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : "—"}
+                                      </span>
+                                    </div>
+                                    {entry.note && (
+                                      <p className="text-xs text-gray-700 mt-1.5 bg-gray-50 p-2 rounded-md border border-gray-200 font-medium">
+                                        {entry.note}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                           <p className="text-sm text-gray-400">No tracking history yet.</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex justify-between mt-4">
-                    {["booked", "check_in", "boarding", "in_flight", "arrived"].map((step) => {
-                      const s = StatusManager.getStatus(step);
-                      const currentProgress = StatusManager.getStatus(selectedFlight.status).progress;
-                      const isReached = currentProgress >= s.progress;
-                      return (
-                        <div key={step} className="flex flex-col items-center">
-                          <div
-                            className={`w-3.5 h-3.5 rounded-full mb-1 ${
-                              isReached ? "bg-orange-500 ring-2 ring-orange-200" : "bg-gray-300"
-                            }`}
-                          />
-                          <span className={`text-xs ${isReached ? "text-gray-900 font-bold" : "text-gray-400"}`}>
-                            {s.label}
+                  {/* Right Column (Actions & Info) */}
+                  <div className="w-full xl:w-[320px] space-y-6">
+                    {/* Booking Information */}
+                    <div className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div className="bg-gray-50/50 px-5 py-4 border-b border-gray-200 font-bold text-gray-900">
+                        Booking Information
+                      </div>
+                      <div className="p-5 space-y-4 text-sm">
+                        <div className="flex justify-between items-center border-b border-gray-50 pb-3">
+                          <span className="text-gray-400 font-semibold">Status</span>
+                          <span className={`px-2 py-0.5 rounded-md text-[11px] font-bold border ${statusColors[selectedFlight.status] || "bg-gray-100 text-gray-700"}`}>
+                            {StatusManager.getStatus(selectedFlight.status).label}
                           </span>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                        <div className="flex justify-between items-center border-b border-gray-50 pb-3">
+                          <span className="text-gray-400 font-semibold">Booking ID</span>
+                          <span className="font-bold text-gray-900 tracking-tight">{selectedFlight.trackingCode}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400 font-semibold">Created on</span>
+                          <span className="font-bold text-gray-900">{selectedFlight.createdAt ? new Date(selectedFlight.createdAt.seconds * 1000).toLocaleDateString() : "—"}</span>
+                        </div>
+                      </div>
+                    </div>
 
-                {/* All 10 Required Fields Detailed Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Traveller Info */}
-                  <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-3">
-                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
-                      <span className="w-5 h-5 bg-orange-100 text-orange-700 rounded-full flex items-center justify-center text-xs">1</span>
-                      Passenger & Traveller Details
-                    </h3>
-                    <Row label="1. First Name" value={selectedFlight.firstName} />
-                    <Row label="2. Last Name" value={selectedFlight.lastName} />
-                    <Row label="3. Date of Birth" value={selectedFlight.dateOfBirth} />
-                    <Row label="10. Sex" value={selectedFlight.sex ? selectedFlight.sex.toUpperCase() : "—"} />
-                    <Row label="7. Email of Traveller" value={selectedFlight.email} />
-                  </div>
-
-                  {/* Flight Info */}
-                  <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-3">
-                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
-                      <span className="w-5 h-5 bg-orange-100 text-orange-700 rounded-full flex items-center justify-center text-xs">2</span>
-                      Flight & Booking Specifications
-                    </h3>
-                    <Row label="4. Flight Destination" value={`${selectedFlight.fromLocation || "—"} ✈ ${selectedFlight.toLocation || "—"}`} />
-                    <Row label="5. Date of Flight" value={selectedFlight.flightDate} />
-                    <Row label="6. Arrival Date" value={selectedFlight.arrivalDate} />
-                    <Row label="8. Flight Type (Class)" value={classLabels[selectedFlight.flightType] || selectedFlight.flightType} />
-                    <Row label="9. Price Range Needed" value={selectedFlight.priceRange} />
-                  </div>
-                </div>
-
-                {/* Live Tracking History & Audit Log */}
-                {selectedFlight.statusHistory && selectedFlight.statusHistory.length > 0 && (
-                  <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4">
-                      Status Audit Trail & Tracking Updates
-                    </h3>
-                    <div className="space-y-4">
-                      {[...selectedFlight.statusHistory].reverse().map((entry, i) => {
-                        const s = StatusManager.getStatus(entry.status);
-                        const dotClass = dotColors[entry.status] || "bg-gray-400";
-                        return (
-                          <div key={i} className="flex items-start gap-3 border-l-2 border-gray-100 pl-4 py-1">
-                            <div className={`w-3 h-3 rounded-full mt-1 flex-shrink-0 -ml-[23px] ${dotClass}`} />
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between">
-                                <span className="text-sm font-bold text-gray-900">{s.label}</span>
-                                <span className="text-xs text-gray-400">
-                                  {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : "—"}
-                                </span>
-                              </div>
-                              {entry.note && (
-                                <p className="text-xs text-gray-700 mt-1 bg-gray-50 p-2.5 rounded-lg border border-gray-200 font-medium">
-                                  Note: {entry.note}
-                                </p>
-                              )}
-                              <p className="text-[11px] text-gray-400 mt-0.5">Updated by: {entry.updatedBy}</p>
-                            </div>
-                          </div>
-                        );
-                      })}
+                    {/* Booking Action */}
+                    <div className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div className="bg-gray-50/50 px-5 py-4 border-b border-gray-200 font-bold text-gray-900">
+                        Booking Action
+                      </div>
+                      <div className="p-5 flex flex-col gap-2.5">
+                        <button 
+                          onClick={() => setEditingFlight(selectedFlight)}
+                          className="w-full py-2.5 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition-colors shadow-sm text-sm"
+                        >
+                          Update Live Status
+                        </button>
+                        <button 
+                          onClick={() => setEditingFlight(selectedFlight)}
+                          className="w-full py-2.5 bg-white border border-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-colors shadow-sm text-sm"
+                        >
+                          Edit Details
+                        </button>
+                        <div className="h-px w-full bg-gray-100 my-1"></div>
+                        <button 
+                          onClick={() => toast.info('Cancellation flow coming soon')}
+                          className="w-full py-2.5 bg-white border border-gray-200 text-red-500 font-bold rounded-lg hover:bg-red-50 transition-colors shadow-sm text-sm"
+                        >
+                          Cancel Booking
+                        </button>
+                      </div>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             )}
           </div>
@@ -613,6 +719,9 @@ export default function SpecialAdminPortal() {
       )}
 
       {/* Booking Modal (Admin can book flights for individuals) */}
+        </div>
+      </main>
+      
       {showBookingModal && (
         <CreateShipmentModal onClose={() => setShowBookingModal(false)} />
       )}

@@ -11,8 +11,19 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useSetAtom } from 'jotai';
 import { auth, db } from '../firebase/firebase';
 import { userAtom } from '../atoms/authAtom';
+import { Plane } from 'lucide-react';
 
-const AuthContext = createContext();
+interface AuthContextType {
+  user: any;
+  token: string | null;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  token: null,
+  loading: true,
+});
 
 export const AuthProvider = ({ children }) => {
   const setUser = useSetAtom(userAtom);
@@ -69,7 +80,16 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, token, loading }}>
-      {loading ? <div className='flex items-center justify-center h-screen w-screen'>Loading...</div> : children}
+      {loading ? (
+        <div className="flex items-center justify-center h-screen w-screen bg-[#F7F6F2] flex-col gap-4">
+          <div className="relative flex items-center justify-center w-16 h-16">
+            <div className="absolute w-16 h-16 border-4 border-gray-200 rounded-full"></div>
+            <div className="absolute w-16 h-16 border-4 border-[#8A5A44] rounded-full border-t-transparent animate-spin"></div>
+            <Plane className="w-6 h-6 text-[#8A5A44] absolute animate-pulse" />
+          </div>
+          <span className="text-gray-500 font-bold text-xs uppercase tracking-widest animate-pulse">Authenticating</span>
+        </div>
+      ) : children}
     </AuthContext.Provider>
   );
 };

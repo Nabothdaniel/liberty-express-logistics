@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { Search, Plane, X, Share, MoreHorizontal, Navigation } from "lucide-react";
+import { Search, Plane, X, Share, Navigation } from "lucide-react";
 import { db } from "../../firebase/firebase";
 import {
   collection,
@@ -21,8 +21,13 @@ import heroPlane from "../../assets/images/landing/hero-plane.jpg";
 const LiveMap = dynamic(() => import("../../components/track/LiveMap"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full bg-[#E5E3DB] animate-pulse flex items-center justify-center">
-      <span className="text-gray-500 font-medium tracking-wide">Loading Live Map...</span>
+    <div className="w-full h-full bg-[#F7F6F2] flex items-center justify-center flex-col gap-4">
+      <div className="relative flex items-center justify-center w-16 h-16">
+        <div className="absolute w-16 h-16 border-4 border-gray-200 rounded-full"></div>
+        <div className="absolute w-16 h-16 border-4 border-[#8A5A44] rounded-full border-t-transparent animate-spin"></div>
+        <Plane className="w-6 h-6 text-[#8A5A44] absolute animate-pulse" />
+      </div>
+      <span className="text-gray-500 font-bold text-xs uppercase tracking-widest animate-pulse">Initializing Map</span>
     </div>
   ),
 });
@@ -102,13 +107,8 @@ function TrackContent() {
   const filtered = flights.filter((f) => {
     if (!searchQuery || !searchQuery.trim()) return false;
     
-    const matchesSearch =
-      `${f.firstName} ${f.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (f.trackingCode || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (f.fromLocation || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (f.toLocation || "").toLowerCase().includes(searchQuery.toLowerCase());
-
-    return matchesSearch;
+    // Only exact tracking code match to protect user privacy
+    return (f.trackingCode || "").toLowerCase() === searchQuery.trim().toLowerCase();
   });
 
   return (
@@ -335,17 +335,31 @@ function TrackContent() {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <button className="flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-gray-700 transition-colors">
+                    <button 
+                      onClick={() => setFocusLocation(selectedFlight?.toLocation || null)}
+                      className="flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-gray-700 transition-colors"
+                    >
                       <Navigation className="w-4 h-4" />
                       <span className="text-[10px] font-bold uppercase tracking-wider">Route</span>
                     </button>
-                    <button className="flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-gray-700 transition-colors">
+                    <button 
+                      onClick={() => {
+                        const trackUrl = window.location.origin + '/track?code=' + selectedFlight.trackingCode;
+                        if (navigator.share) {
+                          navigator.share({
+                            title: 'Track My Flight',
+                            text: `Track my flight ${selectedFlight.trackingCode} on Liberty Express`,
+                            url: trackUrl,
+                          }).catch(console.error);
+                        } else {
+                          navigator.clipboard.writeText(trackUrl);
+                          alert("Tracking link copied to clipboard!");
+                        }
+                      }}
+                      className="flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-gray-700 transition-colors"
+                    >
                       <Share className="w-4 h-4" />
                       <span className="text-[10px] font-bold uppercase tracking-wider">Share</span>
-                    </button>
-                    <button className="flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-gray-700 transition-colors">
-                      <MoreHorizontal className="w-4 h-4" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider">More</span>
                     </button>
                   </div>
 

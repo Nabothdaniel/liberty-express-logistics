@@ -25,9 +25,9 @@ const Field = ({ label, error, children }) => (
 )
 
 const inputClass =
-  "w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all text-sm"
+  "w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8A5A44] focus:border-transparent transition-all text-sm outline-none"
 const selectClass =
-  "w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all text-sm bg-white"
+  "w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8A5A44] focus:border-transparent transition-all text-sm bg-white outline-none"
 
 export default function CreateShipmentModal({ onClose }) {
   const overlayRef = useRef()
@@ -143,12 +143,12 @@ export default function CreateShipmentModal({ onClose }) {
           <div key={step.id} className="flex items-center">
             <div className="flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm ${
                   isCompleted
-                    ? "bg-green-500 text-white"
+                    ? "bg-[#8A5A44] text-white"
                     : isCurrent
-                    ? "bg-gray-800 text-white"
-                    : "bg-gray-200 text-gray-500"
+                    ? "bg-[#8A5A44] text-white ring-4 ring-[#8A5A44]/20"
+                    : "bg-gray-100 text-gray-400"
                 }`}
               >
                 {isCompleted ? <FiCheck className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
@@ -163,8 +163,8 @@ export default function CreateShipmentModal({ onClose }) {
             </div>
             {index < STEPS.length - 1 && (
               <div
-                className={`w-16 h-0.5 mx-4 mt-[-16px] transition-colors duration-300 ${
-                  isCompleted ? "bg-green-500" : "bg-gray-200"
+                className={`w-16 h-1 mx-4 mt-[-16px] rounded-full transition-colors duration-300 ${
+                  isCompleted ? "bg-[#8A5A44]" : "bg-gray-100"
                 }`}
               />
             )}
@@ -358,8 +358,8 @@ export default function CreateShipmentModal({ onClose }) {
   // ─── Success state ────────────────────────────────────────────────────────
   const renderSuccess = () => (
     <div className="text-center py-12">
-      <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <FiCheck className="w-10 h-10 text-green-600" />
+      <div className="w-20 h-20 bg-[#8A5A44]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+        <FiCheck className="w-10 h-10 text-[#8A5A44]" />
       </div>
       <h3 className="text-2xl font-bold text-gray-900 mb-2">Flight Booked Successfully!</h3>
       <p className="text-gray-600 mb-4">
@@ -397,7 +397,7 @@ export default function CreateShipmentModal({ onClose }) {
           <button
             type="button"
             onClick={handleNext}
-            className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors"
+            className="px-6 py-2.5 bg-[#8A5A44] text-white font-bold rounded-xl hover:bg-[#7a4e3b] shadow-md transition-all"
           >
             Continue
           </button>
@@ -405,7 +405,7 @@ export default function CreateShipmentModal({ onClose }) {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
+            className="px-6 py-2.5 bg-[#8A5A44] text-white font-bold rounded-xl hover:bg-[#7a4e3b] shadow-md transition-all disabled:opacity-50 flex items-center space-x-2"
           >
             {loading ? (
               <>
@@ -430,17 +430,17 @@ export default function CreateShipmentModal({ onClose }) {
       onClick={handleOverlayClick}
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm overflow-y-auto flex items-start justify-center p-4 pt-8"
     >
-      <div className="bg-white rounded-xl w-full max-w-3xl mx-auto shadow-2xl relative">
+      <div className="bg-white rounded-2xl w-full max-w-3xl mx-auto shadow-2xl relative border border-gray-100">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 cursor-pointer text-gray-500 hover:text-gray-800 transition-colors"
+          className="absolute top-4 right-4 z-10 cursor-pointer text-gray-400 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-xl transition-all"
         >
-          <FiX className="w-6 h-6" />
+          <FiX className="w-5 h-5" />
         </button>
 
         <div className="p-8">
-          <h2 className="text-2xl font-bold mb-2 text-gray-900 text-center">Book a Flight</h2>
-          <p className="text-center text-gray-500 text-sm mb-8">
+          <h2 className="text-2xl font-extrabold mb-1 text-gray-900">Book a Flight</h2>
+          <p className="text-gray-500 text-sm mb-8 font-medium">
             Fill in the traveller's details to create a flight booking
           </p>
 
